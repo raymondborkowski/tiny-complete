@@ -11,6 +11,8 @@
 [![downloads](https://img.shields.io/npm/dt/tiny-complete.svg)](https://img.shields.io/npm/dt/tiny-complete.svg)
 
 *Lightweight, dependency free type-ahead/autocomplete solution!*
+
+[View Demo](https://raymondborkowski.github.io/tiny-complete/index.html)
 ![](./docs/example.png)
 
 ## Install
