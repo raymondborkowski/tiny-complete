@@ -1,0 +1,24 @@
+{
+  "name": "tiny-complete",
+  "version": "0.0.1",
+  "description": "Tiny complete is THE smallest auto complete package out there today",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raymondborkowski/tiny-complete.git"
+  },
+  "keywords": [
+    "autocomplete",
+    "tiny",
+    "dependency"
+  ],
+  "author": "Raymond Borkowski",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/raymondborkowski/tiny-complete/issues"
+  },
+  "homepage": "https://github.com/raymondborkowski/tiny-complete#readme"
+}
