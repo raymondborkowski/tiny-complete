@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>tiny-complete demo</title>
-    <script src="../index.js"></script>
+    <script src="https://cdn.rawgit.com/raymondborkowski/tiny-complete/master/index.js"></script>
 </head>
 <body>
     <h1>tiny-complete demo page</h1>
@@ -16,7 +16,7 @@
         var TC = new TinyComplete({
             element: '#cityInput'
         });
-        document.getElementById('cityInput').addEventListener('click', function() {
+        window.addEventListener('beforeunload', function() {
             TC.nuke();
         });
     </script>
