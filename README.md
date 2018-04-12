@@ -1,4 +1,6 @@
 # tiny-complete
+[![NPM](https://nodei.co/npm/tiny-complete.png)](https://nodei.co/npm/tiny-complete/)
+
 [![NPM version](https://img.shields.io/npm/v/tiny-complete.svg?style=flat-square)](https://www.npmjs.com/package/tiny-complete)
 [![dependencies](https://david-dm.org/raymondborkowski/tiny-complete.svg)](https://david-dm.org/raymondborkowski/tiny-complete)
 [![Build](https://travis-ci.org/raymondborkowski/tiny-complete.svg?branch=master)](https://travis-ci.org/raymondborkowski/tiny-complete)
@@ -6,6 +8,7 @@
 [![gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/tiny-complete?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![devDependencies](https://david-dm.org/raymondborkowski/tiny-complete/dev-status.svg)](https://david-dm.org/raymondborkowski/tiny-complete#info=devDependencies)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fraymondborkowski%2Ftiny-complete.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fraymondborkowski%2Ftiny-complete?ref=badge_shield)
+[![downloads](https://img.shields.io/npm/dt/tiny-complete.svg)](https://img.shields.io/npm/dt/tiny-complete.svg)
 
 *Lightweight, dependency free type-ahead/autocomplete solution!*
 ![](./docs/example.png)
@@ -13,17 +16,11 @@
 ## Install
 `npm i tiny-complete --save`
 ## Use
-Bind to input:
-
-```html
-<input type="text" id="startDate" />
-<input type="text" id="endDate" />
-```
 
 In Javascript:<br>
 ```js
 new TinyComplete({
-        element: '#element_id'
+    element: '#element_id'
 });
 ```
 
