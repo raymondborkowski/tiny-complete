@@ -4,7 +4,9 @@
   "description": "Tiny complete is THE smallest auto complete package out there today",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "./node_modules/.bin/eslint .",
+    "test": "node ./test/run",
+    "deploy": "npm publish"
   },
   "repository": {
     "type": "git",
@@ -15,10 +17,16 @@
     "tiny",
     "dependency"
   ],
-  "author": "Raymond Borkowski",
+  "author": "Raymond Borkowski <rborkows@umich.edu>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/raymondborkowski/tiny-complete/issues"
   },
-  "homepage": "https://github.com/raymondborkowski/tiny-complete#readme"
+  "homepage": "https://github.com/raymondborkowski/tiny-complete#readme",
+  "devDependencies": {
+    "babel-eslint": "^8.0.1",
+    "eslint-config-airbnb-es5": "^1.2.0",
+    "eslint-plugin-react": "^7.4.0",
+    "feather-test": "^3.3.0"
+  }
 }

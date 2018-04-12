@@ -1,0 +1,22 @@
+language: node_js
+node_js:
+  - node
+  - '8'
+  - '7'
+  - '6'
+cache:
+  directories:
+  - node_modules
+install:
+  - npm install eslint
+  - npm install
+script:
+  - npm run lint
+  - npm test
+deploy:
+  provider: npm
+  email: rborkows@umich.edu
+  api_key:
+    secure: N9KKsdHHnr8DL+fJkdqhVpgGwt/sWD9gWqqcbv5qwG2X3h53TPbzj31hesWfgSY5me69kt1zXiweIZo5jINabb/ILMZ47krYdy/B7LpzIwRHtO58sJQdLyGTSOhBTVoXh9qsjDZ3C9MCcn7eOmtSTZ7OXyfAMkULTYEMQetjSsBVtWNCA+WMjJDeYyafvZ1+gHnCuv+zNhC6yFfzqHon4papG9JvzPqTic2WJoJuRTdEbDCwnqUFjAASVcwoSulEHUu/kKYtkmr/GOrODJAsZ1HXpd38KmB79dCYxK3/Id189IenrWFaSvxQbnimLPSgz0R3PZr39oRsaIYe4kOWeEZbQKy8StVPm1EtFLYXNiXMKmbWnsZBHPaJSWGj2oLCt/W0Tum/olcNFTTJ66cV0liB1a0hf/AVOrEXaK2jl6m9POdkcPl+QP+TRKDMxnZEFw/dc+zxjTA3KjdbyXw5PcKsVHrltYhuj5QsYCk65oxiy2pYrgCvGFuDL77YmfBxz/YFO1uZpsSBQbYIXvscsAcS9NxlLQksmBYEIoQ9+R6o+gYM1kyxgbFg7Zp+wPIbi34t55dzGT0HWh+prHHddBJUhjphDtW5et/hD5Oc852MPpDvMqC6wQOLiCZA+vupzLLd4IQp4kPLe7v9+akH2b76x38/lnLLoFU15bTK3I8=
+  on:
+    branch: master
