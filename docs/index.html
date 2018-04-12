@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>tiny-complete demo</title>
+    <script src="../index.js"></script>
+</head>
+<body>
+    <h1>tiny-complete demo page</h1>
+
+    <p>Type:</p>
+    <div class="autocomplete" style="width:300px;">
+        <input id="cityInput" type="text" name="cities" placeholder="Enter your city">
+    </div>
+    <script>
+        var TC = new TinyComplete({
+            element: '#cityInput'
+        });
+        document.getElementById('cityInput').addEventListener('click', function() {
+            TC.nuke();
+        });
+    </script>
+</body>
+</html>
