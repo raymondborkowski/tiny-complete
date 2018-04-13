@@ -9,14 +9,22 @@
         <h1>tiny-complete demo page</h1>
 
         <p>Type:</p>
-        <div class="autocomplete" style="width:300px;">
+        <div class="type-complete">
             <input id="cityInput" type="text" name="cities" placeholder="Enter your city">
         </div>
         <script>
             var TC = new TinyComplete({
-                element: '#cityInput'
+                id: 'cityInput',
+                setArrVals: function(request, query) {
+                    var resultsArr = this.resultsArr || [];
+                    if (resultsArr.length < 5) {
+                        request('https://a.intentmedia.net/adServer/airports?q=' + query, function(response) {
+                            TC.resultsArr = JSON.parse(response).results;
+                        });
+                    }
+                }
             });
-            document.getElementById('cityInput').addEventListener('click', function() {
+            window.addEventListener('beforeunload', function() {
                 TC.nuke();
             });
         </script>

@@ -8,7 +8,6 @@ cache:
   directories:
   - node_modules
 install:
-  - npm install eslint
   - npm install istanbul
   - npm install
 script:
