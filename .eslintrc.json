@@ -5,7 +5,8 @@
         "space-before-blocks": "off",
         "no-plusplus": "off",
         "func-names": "off",
-        "no-param-reassign": "off"
+        "no-param-reassign": "off",
+        "consistent-return": "off"
     },
     "globals": {
         "describe": true,

@@ -1,7 +1,10 @@
 function filterResults(arr, query, maxResults) {
     var i = 0;
     return arr.filter(function (record) {
-        return record.toLowerCase().indexOf(query.toLowerCase()) !== -1 && i < maxResults && i++ && record;
+        if (i < maxResults && record.toLowerCase().indexOf(query.toLowerCase()) !== -1) {
+            i++;
+            return record;
+        }
     });
 }
 
