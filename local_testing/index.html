@@ -15,14 +15,14 @@
         <script>
             var TC = new TinyComplete({
                 id: 'cityInput',
-                setArrVals: function(request, query) {
-                    var resultsArr = this.resultsArr || [];
-                    if (resultsArr.length < 5) {
-                        request('https://a.intentmedia.net/adServer/airports?q=' + query, function(response) {
-                            TC.resultsArr = JSON.parse(response).results;
+                arrVals: ['ray', 'hi', 'detroit', 'nyc'],
+                onChange: function(tinyCompareObject) {
+                    if (tinyCompareObject.arrVals.length < 5) {
+                        TC.request('https://a.intentmedia.net/adServer/hotel_cities?q=' + tinyCompareObject.query, function(response) {
+                            TC.arrVals = JSON.parse(response).results.map(function(record) { return record.value });
                         });
                     }
-                }
+                },
             });
             window.addEventListener('beforeunload', function() {
                 TC.nuke();
