@@ -39,7 +39,8 @@ function listeners(el, a) {
 
 function bindToInput(el, cb, options) {
     var _this = this;
-    el.addEventListener('keyup', function () {
+    el.addEventListener('keypress', function () {
+        console.log('hi');
         _this.masterList = dedupe(_this.masterList.concat(_this.arrVals));
         _this.query = this.value;
         _this.arrVals = filterResults(_this.masterList, _this.query, options.maxResults);
