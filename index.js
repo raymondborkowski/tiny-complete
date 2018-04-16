@@ -52,9 +52,10 @@ function bindToInput(el, cb, options) {
 
 function TinyComplete(options) {
     options = options || {};
-    var inputEl = document.getElementById(options.id);
+    var inputEl = window.document.getElementById(options.id);
     this.masterList = options.arrVals;
     this.arrVals = options.arrVals;
+    this.query = '';
     bindToInput.call(this, inputEl, function (_this) {
         options.onChange(_this);
     }, options);
