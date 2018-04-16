@@ -1,11 +1,9 @@
-function filterResults(arr, query) {
-    return arr.filter(function (record) { return record.toLowerCase().indexOf(query.toLowerCase()) !== -1; });
+function filterResults(arr, query, maxResults) {
+    var i = 0;
+    return arr.filter(function (record) {
+        return record.toLowerCase().indexOf(query.toLowerCase()) !== -1 && i < maxResults && i++ && record;
+    });
 }
-
-function wasDeleteButton(key) {
-    return key === 8 || key === 46;
-}
-
 
 function dedupe(a, b, c) {
     b = a.length;
@@ -13,41 +11,53 @@ function dedupe(a, b, c) {
     return a;
 }
 
-function addDropDownHTML(_this, el) {
+function addDropDownHTML(el, maxResults) {
+    var _this = this;
     var parentNode = el.parentNode;
     parentNode.children.length > 1 && parentNode.removeChild(parentNode.lastChild);
-    var a = document.createElement('DIV');
-    a.setAttribute('class', 'autocomplete-items');
+    var a = document.createElement('div');
+    a.setAttribute('id', 'autocomplete-items-container');
     parentNode.appendChild(a);
-    for (var i = 0; i < _this.arrVals.length; i++) {
-        var b = document.createElement('DIV');
-        b.innerHTML = '<span>' + _this.arrVals[i] + '</span>';
+    for (var i = 0; i < _this.arrVals.length && i < maxResults; i++) {
+        var b = document.createElement('div');
+        b.innerHTML = _this.arrVals[i];
         a.appendChild(b);
     }
+
+    listeners(el, a);
 }
 
-function bindToInput(el, cb) {
+function listeners(el, a) {
+    el.addEventListener('blur', function () {
+        a.style.display = 'none';
+    });
+
+    el.addEventListener('focus', function () {
+        a.style.display = 'block';
+    });
+}
+
+function bindToInput(el, cb, options) {
     var _this = this;
-    el.addEventListener('keyup', function (e) {
+    el.addEventListener('keyup', function () {
         _this.masterList = dedupe(_this.masterList.concat(_this.arrVals));
-        var vals = wasDeleteButton(e.keyCode) ? _this.masterList : _this.arrVals;
         _this.query = this.value;
-        _this.arrVals = filterResults(vals, _this.query);
-        addDropDownHTML(_this, el);
+        _this.arrVals = filterResults(_this.masterList, _this.query, options.maxResults);
+        addDropDownHTML.call(_this, el, options.maxResults);
         if (typeof cb === 'function') {
             cb(_this);
         }
     });
 }
 
-function TinyComplete(_options) {
-    var options = _options || {};
+function TinyComplete(options) {
+    options = options || {};
     var inputEl = document.getElementById(options.id);
     this.masterList = options.arrVals;
     this.arrVals = options.arrVals;
     bindToInput.call(this, inputEl, function (_this) {
         options.onChange(_this);
-    });
+    }, options);
 }
 
 TinyComplete.prototype.nuke = function () {
