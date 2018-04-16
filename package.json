@@ -27,9 +27,13 @@
   "devDependencies": {
     "babel-eslint": "^8.0.1",
     "codecov": "^3.0.0",
+    "eslint": "^4.19.1",
     "eslint-config-airbnb-es5": "^1.2.0",
     "eslint-plugin-jasmine": "^2.9.3",
     "eslint-plugin-react": "^7.4.0",
-    "jasmine": "^3.1.0"
+    "istanbul": "^0.4.5",
+    "jasmine": "^3.1.0",
+    "jquery": "^3.3.1",
+    "jsdom": "^11.8.0"
   }
 }
