@@ -47,9 +47,7 @@ function bindToInput(el, cb, options) {
         _this.query = this.value;
         _this.arrVals = filterResults(_this.masterList, _this.query, options.maxResults);
         addDropDownHTML.call(_this, el, options.maxResults);
-        if (typeof cb === 'function') {
-            cb(_this);
-        }
+        cb(_this);
     });
 }
 
@@ -60,13 +58,12 @@ function TinyComplete(options) {
     this.arrVals = options.arrVals;
     this.query = '';
     bindToInput.call(this, inputEl, function (_this) {
+        options.onChange = options.onChange || function () {};
         options.onChange(_this);
     }, options);
 }
 
-TinyComplete.prototype.nuke = function () {
-    console.log('Going to destroy everything here');
-};
+TinyComplete.prototype.nuke = function () {};
 
 TinyComplete.prototype.request = function (url, cb) {
     var xmlHttp = new XMLHttpRequest();
