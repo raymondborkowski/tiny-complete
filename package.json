@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "./node_modules/.bin/eslint .",
-    "coverage": "istanbul cover node_modules/jasmine/bin/jasmine.js && codecov",
+    "coverage": "./node_modules/.bin/istanbul cover node_modules/jasmine/bin/jasmine.js && codecov",
     "test": "npm run lint && npm run coverage",
     "deploy": "npm publish"
   },

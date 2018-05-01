@@ -1,6 +1,6 @@
 var TinyComplete = require('../../index');
 var JSDOM = require('jsdom').JSDOM;
-var dom = new JSDOM('<!DOCTYPE html><input id="jokes" type="text" class="jokes" name="jokes" placeholder="Enter your joke term">', { pretendToBeVisual: true });
+var dom = new JSDOM('<!DOCTYPE html><body><input id="jokes" type="text" class="jokes" name="jokes" placeholder="Enter your joke term" /><input id="dumby" type="text" /></body>', { pretendToBeVisual: true });
 global.window = dom.window;
 global.document = dom.window.document;
 global.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
@@ -44,6 +44,15 @@ describe('TinyComplete', function () {
         it('sets empty string for start query', function () {
             expect(TC.query).toBe('');
         });
+
+        describe('Handles no valid options', function () {
+            it('console errs msg', function () {
+                spyOn(console, 'error');
+                TC = new TinyComplete();
+
+                expect(console.error).toHaveBeenCalledWith('Plz pass options into TinyComplete'); // eslint-disable-line no-console
+            });
+        });
     });
 
     describe('Input', function () {
@@ -53,10 +62,33 @@ describe('TinyComplete', function () {
             expect(TC.arrVals).toEqual(['ray', 'detroit']);
         });
 
+        it('defaults to show 10 if no max results', function () {
+            TC = new TinyComplete({
+                id: 'jokes',
+                arrVals: ['r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'r8', 'r9', 'r10', 'r11', 'r12'],
+                onChange: function () {
+                    getInputEl().setAttribute('cats', 'bobo');
+                }
+            });
+            addInput(82, 'r');
+            var lengthOfItems = document.querySelectorAll('#autocomplete-items-container div').length;
+
+            expect(lengthOfItems).toBe(10);
+        });
+
         it('sets cat to bobo onchange', function () {
             addInput(82, 'r');
 
             expect(getInputEl().getAttribute('cats')).toEqual('bobo');
+        });
+
+        // TODO: Make this test fail tests if it throwa an err
+        it('does not error out if no onchange is provided', function () {
+            TC = new TinyComplete({
+                id: 'jokes',
+                arrVals: ['dumb'],
+                maxResults: 1
+            });
         });
 
         describe('delete button hit', function () {
@@ -87,14 +119,26 @@ describe('TinyComplete', function () {
         });
     });
 
-    describe('show results', function () {
-        it('shows the results on click', function () {
+    describe('properly shows and hides list based on focus', function () {
+        it('shows the results on focus of box', function () {
+            addInput(82, 'r');
+            document.getElementById('jokes').focus();
+            var display = document.getElementById('autocomplete-items-container').style.display;
 
+            expect(display).toBe('block');
+        });
+
+        it('hides the results on blur of box', function () {
+            addInput(82, 'r');
+            document.getElementById('jokes').focus();
+            document.getElementById('jokes').blur();
+
+            expect(document.getElementById('autocomplete-items-container').style.display).toBe('none');
         });
     });
 
     describe('Nuke', function () {
-        it('properly returns a request', function () {
+        it('properly nukes instance of TC', function () {
             TC.nuke();
         });
     });
