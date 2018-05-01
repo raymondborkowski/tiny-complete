@@ -1,11 +1,11 @@
 {
   "name": "tiny-complete",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Tiny complete is THE smallest auto complete package out there today",
   "main": "index.js",
   "scripts": {
     "lint": "./node_modules/.bin/eslint .",
-    "coverage": "istanbul cover node_modules/jasmine/bin/jasmine.js && codecov",
+    "coverage": "./node_modules/.bin/istanbul cover node_modules/jasmine/bin/jasmine.js && codecov",
     "test": "npm run lint && npm run coverage",
     "deploy": "npm publish"
   },
@@ -27,9 +27,13 @@
   "devDependencies": {
     "babel-eslint": "^8.0.1",
     "codecov": "^3.0.0",
+    "eslint": "^4.19.1",
     "eslint-config-airbnb-es5": "^1.2.0",
     "eslint-plugin-jasmine": "^2.9.3",
     "eslint-plugin-react": "^7.4.0",
-    "jasmine": "^3.1.0"
+    "istanbul": "^0.4.5",
+    "jasmine": "^3.1.0",
+    "jsdom": "^11.8.0",
+    "xmlhttprequest": "^1.8.0"
   }
 }
