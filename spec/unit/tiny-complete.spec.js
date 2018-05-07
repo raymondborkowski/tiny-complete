@@ -151,4 +151,24 @@ describe('TinyComplete', function () {
             });
         });
     });
+
+    describe('helpers', function () {
+        it('dedupes arrays', function () {
+            TC = new TinyComplete({
+                id: 'jokes',
+                defaultVals: ['ray', 'hi', 'detroit', 'nyc', 'nyc']
+            });
+
+            expect(TC.masterList).toEqual(['ray', 'hi', 'detroit', 'nyc']);
+        });
+
+        it('dedupes objects', function () {
+            TC = new TinyComplete({
+                id: 'jokes',
+                defaultVals: [{key: '1', val: 'dog'}, {key: '2', val: 'cat'}, {key: '3', val: 'pig'}, {key: '1', val: 'dog'}]
+            });
+
+            expect(TC.masterList).toEqual([{key: '1', val: 'dog'}, {key: '2', val: 'cat'}, {key: '3', val: 'pig'}]);
+        });
+    });
 });
