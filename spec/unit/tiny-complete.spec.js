@@ -71,7 +71,7 @@ describe('TinyComplete', function () {
                 }
             });
             addInput(82, 'r');
-            var lengthOfItems = document.querySelectorAll('#autocomplete-items-container div').length;
+            var lengthOfItems = document.querySelectorAll('#autocomplete-items-container option').length;
 
             expect(lengthOfItems).toBe(10);
         });
