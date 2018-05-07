@@ -20,7 +20,7 @@ describe('TinyComplete', function () {
     beforeEach(function () {
         TC = new TinyComplete({
             id: 'jokes',
-            arrVals: ['ray', 'hi', 'detroit', 'nyc'],
+            defaultVals: ['ray', 'hi', 'detroit', 'nyc'],
             onChange: function () {
                 getInputEl().setAttribute('cats', 'bobo');
             },
@@ -34,7 +34,7 @@ describe('TinyComplete', function () {
         });
 
         it('sets proper starting arr', function () {
-            expect(TC.arrVals).toEqual(['ray', 'hi', 'detroit', 'nyc']);
+            expect(TC.defaultVals).toEqual(['ray', 'hi', 'detroit', 'nyc']);
         });
 
         it('sets proper starting master list', function () {
@@ -59,13 +59,13 @@ describe('TinyComplete', function () {
         it('filters down based on r keypress', function () {
             addInput(82, 'r');
 
-            expect(TC.arrVals).toEqual(['ray', 'detroit']);
+            expect(TC.defaultVals).toEqual(['ray', 'detroit']);
         });
 
         it('defaults to show 10 if no max results', function () {
             TC = new TinyComplete({
                 id: 'jokes',
-                arrVals: ['r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'r8', 'r9', 'r10', 'r11', 'r12'],
+                defaultVals: ['r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'r8', 'r9', 'r10', 'r11', 'r12'],
                 onChange: function () {
                     getInputEl().setAttribute('cats', 'bobo');
                 }
@@ -86,7 +86,7 @@ describe('TinyComplete', function () {
         it('does not error out if no onchange is provided', function () {
             TC = new TinyComplete({
                 id: 'jokes',
-                arrVals: ['dumb'],
+                defaultVals: ['dumb'],
                 maxResults: 1
             });
         });
@@ -104,11 +104,11 @@ describe('TinyComplete', function () {
             it('removes previously applied filter to array', function () {
                 addInput('82', 'ray');
 
-                expect(TC.arrVals).toEqual(['ray']);
+                expect(TC.defaultVals).toEqual(['ray']);
 
                 addInput(46, '');
 
-                expect(TC.arrVals.sort()).toEqual(['ray', 'hi', 'detroit', 'nyc'].sort());
+                expect(TC.defaultVals.sort()).toEqual(['ray', 'hi', 'detroit', 'nyc'].sort());
             });
         });
     });

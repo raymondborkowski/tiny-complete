@@ -17,7 +17,8 @@
     },
     "env": {
         "node": true,
-        "jasmine": true
+        "jasmine": true,
+        "amd": true
     },
     "plugins": ["jasmine"]
 }

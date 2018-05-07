@@ -44,11 +44,11 @@
         <script>
             var TC = new TinyComplete({
                 id: 'jokes',
-                arrVals: ['ray', 'hi', 'detroit', 'nyc'],
+                defaultVals: ['ray', 'hi', 'detroit', 'nyc'],
                 onChange: function(tinyCompareObject) {
-                    if (tinyCompareObject.query.length > 10 && tinyCompareObject.arrVals.length < 5) {
-                        TC.request('https://api.chucknorris.io/jokes/search?query=' + tinyCompareObject.query, function(response) {
-                            TC.arrVals = JSON.parse(response).result.map(function(record) { return record.value });
+                    if (tinyCompareObject.query.length > 2 && tinyCompareObject.defaultVals.length < 5) {
+                        TC.request('https://a.intentmedia.net/adServer/airports?q=' + tinyCompareObject.query, function(response) {
+                            TC.defaultVals = JSON.parse(response).results.map(function(record) { return record.value });
                         });
                     }
                 },

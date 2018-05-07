@@ -21,9 +21,9 @@ function addDropDownHTML(el, maxResults) {
     var listContainer = document.createElement('div');
     listContainer.setAttribute('id', 'autocomplete-items-container');
     parentNode.appendChild(listContainer);
-    for (var i = 0; i < _this.arrVals.length && i < maxResults; i++) {
+    for (var i = 0; i < _this.defaultVals.length && i < maxResults; i++) {
         var b = document.createElement('div');
-        b.innerHTML = _this.arrVals[i];
+        b.innerHTML = _this.defaultVals[i];
         listContainer.appendChild(b);
     }
 
@@ -43,10 +43,10 @@ function listeners(el, listContainer) {
 function bindToInput(el, cb, options) {
     var _this = this;
     el.addEventListener('keyup', function () {
-        _this.masterList = dedupe(_this.masterList.concat(_this.arrVals));
+        _this.masterList = dedupe(_this.masterList.concat(_this.defaultVals));
         _this.query = this.value;
         var maxResults = options.maxResults || 10;
-        _this.arrVals = filterResults(_this.masterList, _this.query, maxResults);
+        _this.defaultVals = filterResults(_this.masterList, _this.query, maxResults);
         addDropDownHTML.call(_this, el, maxResults);
         cb(_this);
     });
@@ -55,11 +55,11 @@ function bindToInput(el, cb, options) {
 function TinyComplete(options) {
     if (typeof options !== 'object') return console.error('Plz pass options into TinyComplete');  // eslint-disable-line no-console
     var inputEl = window.document.getElementById(options.id);
-    this.masterList = options.arrVals;
-    this.arrVals = options.arrVals;
+    this.masterList = options.defaultVals;
+    this.defaultVals = options.defaultVals;
     this.query = '';
     bindToInput.call(this, inputEl, function (_this) {
-        options.onChange = options.onChange || function () {};
+        options.onChange = options.onChange || function () /* istanbul ignore next: TODO: test this */ {};
         options.onChange(_this);
     }, options);
 }
@@ -77,4 +77,13 @@ TinyComplete.prototype.request = function (url, cb) {
     xmlHttp.send(null);
 };
 
-module.exports = TinyComplete;
+(function () {
+    /* istanbul ignore next  */
+    if (typeof exports === 'object') {
+        module.exports = TinyComplete;
+    } else if (typeof define === 'function' && define.amd) {
+        window.define(TinyComplete);
+    } else {
+        window.TinyComplete = TinyComplete;
+    }
+}.call(this));
