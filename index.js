@@ -8,10 +8,10 @@ function filterResults(arr, query, maxResults) {
     });
 }
 
-function dedupe(a, b, c) {
-    b = a.length;
-    while (c = --b) while (c--)a[b] !== a[c] || a.splice(c, 1); // eslint-disable-line no-cond-assign
-    return a;
+function dedupe(list, i) {
+    var listLength = list.length;
+    while (i = --listLength) while (i--)list[listLength] !== list[i] || list.splice(i, 1); // eslint-disable-line no-cond-assign
+    return list;
 }
 
 function addDropDownHTML(el, maxResults) {
@@ -22,9 +22,10 @@ function addDropDownHTML(el, maxResults) {
     listContainer.setAttribute('id', 'autocomplete-items-container');
     parentNode.appendChild(listContainer);
     for (var i = 0; i < _this.defaultVals.length && i < maxResults; i++) {
-        var b = document.createElement('div');
-        b.innerHTML = _this.defaultVals[i];
-        listContainer.appendChild(b);
+        var option = document.createElement('option');
+        option.setAttribute('class', 'autocomplete-options');
+        option.innerHTML = _this.defaultVals[i];
+        listContainer.appendChild(option);
     }
 
     listeners(el, listContainer);

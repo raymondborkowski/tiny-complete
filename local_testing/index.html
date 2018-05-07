@@ -23,13 +23,13 @@
                 border-top: none;
                 z-index: 99;
             }
-            #autocomplete-items-container div {
+            #autocomplete-items-container option {
                 padding: 10px;
                 cursor: pointer;
                 background-color: #fff;
                 border-bottom: 1px solid #d4d4d4;
             }
-            #autocomplete-items-container div:hover {
+            #autocomplete-items-container option:hover {
                 background-color: red;
             }
         </style>
@@ -44,7 +44,7 @@
         <script>
             var TC = new TinyComplete({
                 id: 'jokes',
-                defaultVals: ['ray', 'hi', 'detroit', 'nyc'],
+                defaultVals: ['ray', 'hi', 'detroit', 'nyc', 'nyc'],
                 onChange: function(tinyCompareObject) {
                     if (tinyCompareObject.query.length > 2 && tinyCompareObject.defaultVals.length < 5) {
                         TC.request('https://a.intentmedia.net/adServer/airports?q=' + tinyCompareObject.query, function(response) {

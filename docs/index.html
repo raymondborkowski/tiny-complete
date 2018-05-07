@@ -4,17 +4,55 @@
     <meta charset="UTF-8">
     <title>tiny-complete demo</title>
     <script src="https://cdn.rawgit.com/raymondborkowski/tiny-complete/master/index.js"></script>
+    <style>
+        .autocomplete {
+            position: relative;
+            display: inline-block;
+        }
+        input {
+            border: 1px solid transparent;
+            background-color: #fff;
+            padding: 10px;
+            font-size: 16px;
+            width: 25%;
+        }
+        #autocomplete-items-container {
+            position: absolute;
+            border: 1px solid #d4d4d4;
+            border-bottom: none;
+            border-top: none;
+            z-index: 99;
+        }
+        #autocomplete-items-container option {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #fff;
+            border-bottom: 1px solid #d4d4d4;
+        }
+        #autocomplete-items-container option:hover {
+            background-color: red;
+        }
+    </style>
 </head>
 <body>
     <h1>tiny-complete demo page</h1>
 
     <p>Type:</p>
     <div class="autocomplete" style="width:300px;">
-        <input id="cityInput" type="text" name="cities" placeholder="Enter your city">
+        <input id="jokes" type="text" name="cities" placeholder="Enter your city">
     </div>
     <script>
         var TC = new TinyComplete({
-            element: '#cityInput'
+            id: 'jokes',
+            defaultVals: ['ray', 'hi', 'detroit', 'nyc', 'nyc'],
+            onChange: function(tinyCompareObject) {
+                if (tinyCompareObject.query.length > 2 && tinyCompareObject.defaultVals.length < 5) {
+                    TC.request('https://a.intentmedia.net/adServer/airports?q=' + tinyCompareObject.query, function(response) {
+                        TC.defaultVals = JSON.parse(response).results.map(function(record) { return record.value });
+                    });
+                }
+            },
+            maxResults: 15,
         });
         window.addEventListener('beforeunload', function() {
             TC.nuke();
