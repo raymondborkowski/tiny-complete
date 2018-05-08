@@ -18,11 +18,26 @@
 ## Install
 `npm i tiny-complete --save`
 ## Use
+HTML
+* It is important to position the parent element rather than the input so the dropdown container knows where to position itself.
 
-In Javascript:<br>
+```html
+<div class="tiny-complete">
+    <input id="jokes" type="text" name="jokes" placeholder="Enter your joke term">
+</div>
+```
 ```js
-new TinyComplete({
-    element: '#element_id'
+var TC = new TinyComplete({
+    id: 'jokes',
+    defaultVals: ['ray', 'hi', 'detroit', 'nyc', 'nyc'],
+    onChange: function(tinyCompareObject) {
+        if (tinyCompareObject.query.length > 2 && tinyCompareObject.defaultVals.length < 5) {
+            TC.request('https://a.intentmedia.net/adServer/airports?q=' + tinyCompareObject.query, function(response) {
+                TC.defaultVals = JSON.parse(response).results.map(function(record) { return record.value });
+            });
+        }
+    },
+    maxResults: 15,
 });
 ```
 

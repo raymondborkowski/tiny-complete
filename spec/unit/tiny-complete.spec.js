@@ -1,26 +1,35 @@
 var TinyComplete = require('../../index');
 var JSDOM = require('jsdom').JSDOM;
-var dom = new JSDOM('<!DOCTYPE html><body><input id="jokes" type="text" class="jokes" name="jokes" placeholder="Enter your joke term" /><input id="dumby" type="text" /></body>', { pretendToBeVisual: true });
-global.window = dom.window;
-global.document = dom.window.document;
-global.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 
 describe('TinyComplete', function () {
+    var TC;
     function getInputEl() {
-        return window.document.querySelector('#jokes');
+        return window.document.getElementById('jokes');
     }
 
     function addInput(keyCode, value) {
-        const event = new window.KeyboardEvent( 'keyup', { keyCode: keyCode } );
-        getInputEl().setAttribute('value', value);
-        getInputEl().dispatchEvent(event);
+        var event = new window.KeyboardEvent( 'keyup', { keyCode: keyCode } );
+        var inputEl = getInputEl();
+        inputEl.setAttribute('value', value);
+        inputEl.innerText = value;
+        inputEl.dispatchEvent(event);
     }
 
-    var TC;
+    function clickOnEl(el) {
+        var evt = document.createEvent('HTMLEvents');
+        evt.initEvent('click', false, true);
+        el.dispatchEvent(evt);
+        document.body.focus();
+    }
+
     beforeEach(function () {
+        var dom = new JSDOM('<!DOCTYPE html><body><input id="dumby1" type="text" /><input id="jokes" type="text" class="jokes" name="jokes" placeholder="Enter your joke term" /><div></div></body>', { pretendToBeVisual: true });
+        global.window = dom.window;
+        global.document = dom.window.document;
+        global.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
         TC = new TinyComplete({
             id: 'jokes',
-            arrVals: ['ray', 'hi', 'detroit', 'nyc'],
+            defaultVals: ['ray', 'hi', 'detroit', 'nyc'],
             onChange: function () {
                 getInputEl().setAttribute('cats', 'bobo');
             },
@@ -34,7 +43,7 @@ describe('TinyComplete', function () {
         });
 
         it('sets proper starting arr', function () {
-            expect(TC.arrVals).toEqual(['ray', 'hi', 'detroit', 'nyc']);
+            expect(TC.defaultVals).toEqual(['ray', 'hi', 'detroit', 'nyc']);
         });
 
         it('sets proper starting master list', function () {
@@ -56,22 +65,33 @@ describe('TinyComplete', function () {
     });
 
     describe('Input', function () {
-        it('filters down based on r keypress', function () {
+        it('filters down Arrays based on r keypress', function () {
             addInput(82, 'r');
 
-            expect(TC.arrVals).toEqual(['ray', 'detroit']);
+            expect(TC.defaultVals).toEqual(['ray', 'detroit']);
+        });
+
+        it('filters down object based on r keypress', function () {
+            TC = new TinyComplete({
+                id: 'jokes',
+                defaultVals: [{key: '1', val: 'dog'}, {key: '2', val: 'cat'}, {key: '3', val: 'pig'}, {key: '4', val: 'rooster'}]
+            });
+
+            addInput(82, 'r');
+
+            expect(TC.defaultVals).toEqual({0: {key: '4', val: 'rooster'}});
         });
 
         it('defaults to show 10 if no max results', function () {
             TC = new TinyComplete({
                 id: 'jokes',
-                arrVals: ['r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'r8', 'r9', 'r10', 'r11', 'r12'],
+                defaultVals: ['r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'r8', 'r9', 'r10', 'r11', 'r12'],
                 onChange: function () {
                     getInputEl().setAttribute('cats', 'bobo');
                 }
             });
             addInput(82, 'r');
-            var lengthOfItems = document.querySelectorAll('#autocomplete-items-container div').length;
+            var lengthOfItems = document.querySelectorAll('#autocomplete-items-container p').length;
 
             expect(lengthOfItems).toBe(10);
         });
@@ -82,13 +102,24 @@ describe('TinyComplete', function () {
             expect(getInputEl().getAttribute('cats')).toEqual('bobo');
         });
 
-        // TODO: Make this test fail tests if it throwa an err
+        // TODO: Make this test fail tests if it throws an err
         it('does not error out if no onchange is provided', function () {
             TC = new TinyComplete({
                 id: 'jokes',
-                arrVals: ['dumb'],
+                defaultVals: ['dumb'],
                 maxResults: 1
             });
+        });
+
+        it('Adds key element to option if an object', function () {
+            TC = new TinyComplete({
+                id: 'jokes',
+                defaultVals: [{key: '1', val: 'dog'}, {key: '2', val: 'cat'}, {key: '3', val: 'rooster'}, {key: '1', val: 'dog'}]
+            });
+
+            addInput(82, 'r');
+
+            expect(document.getElementsByClassName('autocomplete-options')[0].getAttribute('key')).toBe('3');
         });
 
         describe('delete button hit', function () {
@@ -104,11 +135,11 @@ describe('TinyComplete', function () {
             it('removes previously applied filter to array', function () {
                 addInput('82', 'ray');
 
-                expect(TC.arrVals).toEqual(['ray']);
+                expect(TC.defaultVals).toEqual(['ray']);
 
                 addInput(46, '');
 
-                expect(TC.arrVals.sort()).toEqual(['ray', 'hi', 'detroit', 'nyc'].sort());
+                expect(TC.defaultVals.sort()).toEqual(['ray', 'hi', 'detroit', 'nyc'].sort());
             });
         });
     });
@@ -119,7 +150,7 @@ describe('TinyComplete', function () {
         });
     });
 
-    describe('properly shows and hides list based on focus', function () {
+    describe('properly shows and hides list of options', function () {
         it('shows the results on focus of box', function () {
             addInput(82, 'r');
             document.getElementById('jokes').focus();
@@ -128,12 +159,39 @@ describe('TinyComplete', function () {
             expect(display).toBe('block');
         });
 
-        it('hides the results on blur of box', function () {
+        it('hides the results on click of document', function () {
             addInput(82, 'r');
-            document.getElementById('jokes').focus();
-            document.getElementById('jokes').blur();
+            getInputEl().focus();
+            document.getElementById('dumby1').focus();
+            clickOnEl(document);
 
             expect(document.getElementById('autocomplete-items-container').style.display).toBe('none');
+        });
+
+        it('keeps the result if input box still has focus', function () {
+            addInput(82, 'r');
+            document.getElementById('jokes').focus();
+            clickOnEl(document);
+
+            expect(document.getElementById('autocomplete-items-container').style.display).toBe('block');
+        });
+    });
+
+    describe('click of option', function () {
+        it('hides the results on click of option', function () {
+            addInput(82, 'r');
+            document.getElementById('jokes').focus();
+            clickOnEl(document.getElementById('autocomplete-items-container'));
+
+            expect(document.getElementById('autocomplete-items-container').style.display).toBe('none');
+        });
+
+        it('does not hide options when click on input el', function () {
+            addInput(82, 'r');
+            getInputEl().focus();
+            clickOnEl(getInputEl());
+
+            expect(document.getElementById('autocomplete-items-container').style.display).toBe('block');
         });
     });
 
@@ -149,6 +207,26 @@ describe('TinyComplete', function () {
                 expect(JSON.parse(response).total).toEqual(11);
                 done();
             });
+        });
+    });
+
+    describe('helpers', function () {
+        it('dedupes arrays', function () {
+            TC = new TinyComplete({
+                id: 'jokes',
+                defaultVals: ['ray', 'hi', 'detroit', 'nyc', 'nyc']
+            });
+
+            expect(TC.masterList).toEqual(['ray', 'hi', 'detroit', 'nyc']);
+        });
+
+        it('dedupes objects', function () {
+            TC = new TinyComplete({
+                id: 'jokes',
+                defaultVals: [{key: '1', val: 'dog'}, {key: '2', val: 'cat'}, {key: '3', val: 'pig'}, {key: '1', val: 'dog'}]
+            });
+
+            expect(TC.masterList).toEqual([{key: '1', val: 'dog'}, {key: '2', val: 'cat'}, {key: '3', val: 'pig'}]);
         });
     });
 });

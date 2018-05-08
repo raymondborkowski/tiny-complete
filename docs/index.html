@@ -3,22 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <title>tiny-complete demo</title>
-    <script src="https://cdn.rawgit.com/raymondborkowski/tiny-complete/master/index.js"></script>
+    <script src="../index.js"></script>
+    <style>
+        .autocomplete {
+            position: relative;
+            display: inline-block;
+        }
+        input {
+            border: 1px solid transparent;
+            background-color: #fff;
+            padding: 10px;
+            font-size: 16px;
+            width: 25%;
+        }
+        #autocomplete-items-container {
+            position: absolute;
+            border: 1px solid #d4d4d4;
+            border-bottom: none;
+            border-top: none;
+            z-index: 99;
+        }
+        #autocomplete-items-container p {
+            padding: 10px;
+            cursor: pointer;
+            margin: 0;
+            background-color: #fff;
+            border-bottom: 1px solid #d4d4d4;
+        }
+        #autocomplete-items-container p:hover {
+            background-color: red;
+        }
+    </style>
 </head>
 <body>
-    <h1>tiny-complete demo page</h1>
+<h1>tiny-complete demo page</h1>
 
-    <p>Type:</p>
-    <div class="autocomplete" style="width:300px;">
-        <input id="cityInput" type="text" name="cities" placeholder="Enter your city">
-    </div>
-    <script>
-        var TC = new TinyComplete({
-            element: '#cityInput'
-        });
-        window.addEventListener('beforeunload', function() {
-            TC.nuke();
-        });
-    </script>
+<p>Type:</p>
+<div class="type-complete">
+    <input id="city" type="text" name="city" placeholder="This is the array example. Type a city.">
+</div>
+<div class="type-complete">
+    <input id="city2" type="text" name="city" placeholder="This is the object example. Type a city.">
+</div>
+<script>
+    // Example of using array values
+    var TC = new TinyComplete({
+        id: 'city',
+        defaultVals: ['LA','Miami','Detroit','NYC','NYC'],
+        onChange: function(tinyCompareObject) {
+            if (tinyCompareObject.query.length > 2 && tinyCompareObject.defaultVals.length < 5) {
+                TC.request('https://a.intentmedia.net/adServer/airports?q=' + tinyCompareObject.query, function(response) {
+                    TC.masterList = TC.masterList.concat(JSON.parse(response).results.map(function(record) { return record.value }));
+                });
+            }
+        },
+        onClick: function(val) {
+            console.log(val);
+        },
+        maxResults: 15,
+    });
+
+    // Example of using objects. Please set object using KV pairs
+    var TC2 = new TinyComplete({
+        id: 'city2',
+        defaultVals: [{key: 'DTW', val: 'Detroit'}, {key: 'MIA', val: 'Miami'}, {key: 'NYC', val: 'NYC'}, {key: 'LAX', val: 'LA'}],
+        onChange: function(tinyCompareObject) {
+            if (tinyCompareObject.query.length > 2 && Object.keys(tinyCompareObject.defaultVals).length < 5) {
+                TC2.request('https://a.intentmedia.net/adServer/airports?q=' + tinyCompareObject.query, function(response) {
+                    TC2.masterList = TC2.masterList.concat(JSON.parse(response).results.map(function(record) { return {key: record.key, val: record.value} }));
+                });
+            }
+        },
+        onClick: function(val, key) {
+            console.log(val, key);
+        },
+        maxResults: 15,
+    });
+</script>
 </body>
 </html>
