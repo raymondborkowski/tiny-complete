@@ -56,10 +56,21 @@ describe('TinyComplete', function () {
     });
 
     describe('Input', function () {
-        it('filters down based on r keypress', function () {
+        it('filters down Arrays based on r keypress', function () {
             addInput(82, 'r');
 
             expect(TC.defaultVals).toEqual(['ray', 'detroit']);
+        });
+
+        it('filters down object based on r keypress', function () {
+            TC = new TinyComplete({
+                id: 'jokes',
+                defaultVals: [{key: '1', val: 'dog'}, {key: '2', val: 'cat'}, {key: '3', val: 'pig'}, {key: '4', val: 'rooster'}]
+            });
+
+            addInput(82, 'r');
+
+            expect(TC.defaultVals).toEqual({0: {key: '4', val: 'rooster'}});
         });
 
         it('defaults to show 10 if no max results', function () {
