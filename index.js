@@ -32,7 +32,9 @@ function filterResults(list, query) {
 }
 
 function positionElXAxis(parent, el) {
-    el.style.left = parent.getBoundingClientRect().left + 'px';
+    var parentStyles = parent.getBoundingClientRect();
+    el.style.left = parentStyles.left + 'px';
+    el.style.minWidth = parentStyles.width + 'px';
 }
 
 function dedupe(list, i) {
