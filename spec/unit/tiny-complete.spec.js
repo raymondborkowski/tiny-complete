@@ -93,13 +93,24 @@ describe('TinyComplete', function () {
             expect(getInputEl().getAttribute('cats')).toEqual('bobo');
         });
 
-        // TODO: Make this test fail tests if it throwa an err
+        // TODO: Make this test fail tests if it throws an err
         it('does not error out if no onchange is provided', function () {
             TC = new TinyComplete({
                 id: 'jokes',
                 defaultVals: ['dumb'],
                 maxResults: 1
             });
+        });
+
+        it('Adds key element to option if an object', function () {
+            TC = new TinyComplete({
+                id: 'jokes',
+                defaultVals: [{key: '1', val: 'dog'}, {key: '2', val: 'cat'}, {key: '3', val: 'rooster'}, {key: '1', val: 'dog'}]
+            });
+
+            addInput(82, 'r');
+
+            expect(document.getElementsByClassName('autocomplete-options')[0].getAttribute('key')).toBe('3');
         });
 
         describe('delete button hit', function () {
