@@ -48,28 +48,24 @@ function dedupe(list, i) {
     });
 }
 
-function addDropDownHTML(el, maxResults) {
-    var _this = this;
-    var parentNode = el.parentNode;
-    parentNode.children.length > 1 && parentNode.removeChild(parentNode.lastChild);
-    var listContainer = document.createElement('div');
-    listContainer.setAttribute('id', 'autocomplete-items-container');
-    parentNode.appendChild(listContainer);
-    positionElXAxis(el, listContainer);
-    for (var i = 0; (i < _this.defaultVals.length || i < Object.keys(_this.defaultVals).length) && i < maxResults; i++) {
-        var option = document.createElement('option');
-        option.setAttribute('class', 'autocomplete-options');
-        option.innerHTML = _this.defaultVals[i].val || _this.defaultVals[i];
-        option.setAttribute('key',  _this.defaultVals[i].key);
-        listContainer.appendChild(option);
-    }
-
-    listeners(el, listContainer);
+function handleClick(inputEl, elClicked, cb) {
+    var val = elClicked.innerText;
+    var key = elClicked.getAttribute('key');
+    inputEl.value = val;
+    inputEl.setAttribute('key', key);
+    cb(val, key);
 }
 
-function listeners(el, listContainer) {
-    el.addEventListener('blur', function () {
+function listeners(el, listContainer, options) {
+    listContainer.addEventListener('click', function (e) {
+        handleClick(el, e.target, options.onClick || function () {});
         listContainer.style.display = 'none';
+    });
+
+    document.addEventListener('click', function (e) {
+        if (el !== document.activeElement && e.target.parentNode !== listContainer) {
+            listContainer.style.display = 'none';
+        }
     });
 
     el.addEventListener('focus', function () {
@@ -77,28 +73,44 @@ function listeners(el, listContainer) {
     });
 }
 
-function bindToInput(el, cb, options) {
+function addDropDownHTML(el, options) {
     var _this = this;
-    el.addEventListener('keyup', function () {
+    var parentNode = el.parentNode;
+    var maxResults = options.maxResults || 10;
+    parentNode.children.length > 1 && parentNode.removeChild(parentNode.lastChild);
+    var listContainer = document.createElement('div');
+    listContainer.setAttribute('id', 'autocomplete-items-container');
+    parentNode.appendChild(listContainer);
+    positionElXAxis(el, listContainer);
+    for (var i = 0; (i < _this.defaultVals.length || i < Object.keys(_this.defaultVals).length) && i < maxResults; i++) {
+        var choice = document.createElement('p');
+        choice.setAttribute('class', 'autocomplete-options');
+        choice.innerHTML = _this.defaultVals[i].val || _this.defaultVals[i];
+        choice.setAttribute('key',  _this.defaultVals[i].key);
+        listContainer.appendChild(choice);
+    }
+
+    listeners(el, listContainer, options);
+}
+
+function bindToInput(options) {
+    var _this = this;
+    var inputEl = window.document.getElementById(options.id);
+    inputEl.addEventListener('keyup', function () {
         _this.masterList = dedupe(_this.masterList);
         _this.query = this.value;
-        var maxResults = options.maxResults || 10;
-        _this.defaultVals = filterResults(_this.masterList, _this.query, maxResults);
-        addDropDownHTML.call(_this, el, maxResults);
-        cb(_this);
+        _this.defaultVals = filterResults(_this.masterList, _this.query);
+        addDropDownHTML.call(_this, inputEl, options);
+        options.onChange ? options.onChange(_this) : /* istanbul ignore next */ function () {};
     });
 }
 
 function TinyComplete(options) {
     if (typeof options !== 'object') return console.error('Plz pass options into TinyComplete');  // eslint-disable-line no-console
-    var inputEl = window.document.getElementById(options.id);
     this.masterList = dedupe(options.defaultVals);
     this.defaultVals = this.masterList;
     this.query = '';
-    bindToInput.call(this, inputEl, function (_this) {
-        options.onChange = options.onChange || function () /* istanbul ignore next: TODO: test this */ {};
-        options.onChange(_this);
-    }, options);
+    bindToInput.call(this, options);
 }
 
 TinyComplete.prototype.nuke = function () {};

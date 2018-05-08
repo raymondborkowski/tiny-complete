@@ -23,13 +23,14 @@
             border-top: none;
             z-index: 99;
         }
-        #autocomplete-items-container option {
+        #autocomplete-items-container p {
             padding: 10px;
             cursor: pointer;
+            margin: 0;
             background-color: #fff;
             border-bottom: 1px solid #d4d4d4;
         }
-        #autocomplete-items-container option:hover {
+        #autocomplete-items-container p:hover {
             background-color: red;
         }
     </style>
@@ -56,7 +57,7 @@
                 });
             }
         },
-        onclick: function(val) {
+        onClick: function(val) {
             console.log(val);
         },
         maxResults: 15,
@@ -73,8 +74,8 @@
                 });
             }
         },
-        onclick: function(val) {
-            console.log(val);
+        onClick: function(val, key) {
+            console.log(val, key);
         },
         maxResults: 15,
     });

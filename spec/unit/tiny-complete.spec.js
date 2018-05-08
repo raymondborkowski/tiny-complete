@@ -1,23 +1,32 @@
 var TinyComplete = require('../../index');
 var JSDOM = require('jsdom').JSDOM;
-var dom = new JSDOM('<!DOCTYPE html><body><input id="jokes" type="text" class="jokes" name="jokes" placeholder="Enter your joke term" /><input id="dumby" type="text" /></body>', { pretendToBeVisual: true });
-global.window = dom.window;
-global.document = dom.window.document;
-global.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 
 describe('TinyComplete', function () {
+    var TC;
     function getInputEl() {
-        return window.document.querySelector('#jokes');
+        return window.document.getElementById('jokes');
     }
 
     function addInput(keyCode, value) {
-        const event = new window.KeyboardEvent( 'keyup', { keyCode: keyCode } );
-        getInputEl().setAttribute('value', value);
-        getInputEl().dispatchEvent(event);
+        var event = new window.KeyboardEvent( 'keyup', { keyCode: keyCode } );
+        var inputEl = getInputEl();
+        inputEl.setAttribute('value', value);
+        inputEl.innerText = value;
+        inputEl.dispatchEvent(event);
     }
 
-    var TC;
+    function clickOnEl(el) {
+        var evt = document.createEvent('HTMLEvents');
+        evt.initEvent('click', false, true);
+        el.dispatchEvent(evt);
+        document.body.focus();
+    }
+
     beforeEach(function () {
+        var dom = new JSDOM('<!DOCTYPE html><body><input id="dumby1" type="text" /><input id="jokes" type="text" class="jokes" name="jokes" placeholder="Enter your joke term" /><div></div></body>', { pretendToBeVisual: true });
+        global.window = dom.window;
+        global.document = dom.window.document;
+        global.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
         TC = new TinyComplete({
             id: 'jokes',
             defaultVals: ['ray', 'hi', 'detroit', 'nyc'],
@@ -82,7 +91,7 @@ describe('TinyComplete', function () {
                 }
             });
             addInput(82, 'r');
-            var lengthOfItems = document.querySelectorAll('#autocomplete-items-container option').length;
+            var lengthOfItems = document.querySelectorAll('#autocomplete-items-container p').length;
 
             expect(lengthOfItems).toBe(10);
         });
@@ -141,7 +150,7 @@ describe('TinyComplete', function () {
         });
     });
 
-    describe('properly shows and hides list based on focus', function () {
+    describe('properly shows and hides list of options', function () {
         it('shows the results on focus of box', function () {
             addInput(82, 'r');
             document.getElementById('jokes').focus();
@@ -150,12 +159,39 @@ describe('TinyComplete', function () {
             expect(display).toBe('block');
         });
 
-        it('hides the results on blur of box', function () {
+        it('hides the results on click of document', function () {
             addInput(82, 'r');
-            document.getElementById('jokes').focus();
-            document.getElementById('jokes').blur();
+            getInputEl().focus();
+            document.getElementById('dumby1').focus();
+            clickOnEl(document);
 
             expect(document.getElementById('autocomplete-items-container').style.display).toBe('none');
+        });
+
+        it('keeps the result if input box still has focus', function () {
+            addInput(82, 'r');
+            document.getElementById('jokes').focus();
+            clickOnEl(document);
+
+            expect(document.getElementById('autocomplete-items-container').style.display).toBe('block');
+        });
+    });
+
+    describe('click of option', function () {
+        it('hides the results on click of option', function () {
+            addInput(82, 'r');
+            document.getElementById('jokes').focus();
+            clickOnEl(document.getElementById('autocomplete-items-container'));
+
+            expect(document.getElementById('autocomplete-items-container').style.display).toBe('none');
+        });
+
+        it('does not hide options when click on input el', function () {
+            addInput(82, 'r');
+            getInputEl().focus();
+            clickOnEl(getInputEl());
+
+            expect(document.getElementById('autocomplete-items-container').style.display).toBe('block');
         });
     });
 
