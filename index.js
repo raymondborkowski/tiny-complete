@@ -58,6 +58,7 @@ function addDropDownHTML(el, maxResults) {
         var option = document.createElement('option');
         option.setAttribute('class', 'autocomplete-options');
         option.innerHTML = _this.defaultVals[i].val || _this.defaultVals[i];
+        option.setAttribute('key',  _this.defaultVals[i].key);
         listContainer.appendChild(option);
     }
 
