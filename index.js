@@ -33,7 +33,10 @@ function filterResults(list, query) {
 
 function positionElXAxis(parent, el) {
     var parentStyles = parent.getBoundingClientRect();
-    el.style.left = parentStyles.left + 'px';
+    /* istanbul ignore next  */
+    if (el.getBoundingClientRect().left !== parentStyles.left) {
+        el.style.left = parentStyles.left + 'px';
+    }
     el.style.minWidth = parentStyles.width + 'px';
 }
 
@@ -62,14 +65,12 @@ function listeners(el, listContainer, options) {
         listContainer.style.display = 'none';
     });
 
-    document.addEventListener('click', function (e) {
-        if (el !== document.activeElement && e.target.parentNode !== listContainer) {
-            listContainer.style.display = 'none';
-        }
+    el.addEventListener('blur', function () {
+        setTimeout(function () { listContainer.style.display = 'none'; }, 200);
     });
 
     el.addEventListener('focus', function () {
-        listContainer.style.display = 'block';
+        setTimeout(function () { listContainer.style.display = 'block'; }, 200);
     });
 }
 
@@ -79,7 +80,7 @@ function addDropDownHTML(el, options) {
     var maxResults = options.maxResults || 10;
     parentNode.children.length > 1 && parentNode.removeChild(parentNode.lastChild);
     var listContainer = document.createElement('div');
-    listContainer.setAttribute('id', 'autocomplete-items-container');
+    listContainer.setAttribute('class', 'autocomplete-items-container');
     parentNode.appendChild(listContainer);
     positionElXAxis(el, listContainer);
     for (var i = 0; (i < _this.defaultVals.length || i < Object.keys(_this.defaultVals).length) && i < maxResults; i++) {
