@@ -3,6 +3,7 @@ var JSDOM = require('jsdom').JSDOM;
 
 describe('TinyComplete', function () {
     var TC;
+    jasmine.clock().install();
     function getInputEl() {
         return window.document.getElementById('jokes');
     }
@@ -19,7 +20,6 @@ describe('TinyComplete', function () {
         var evt = document.createEvent('HTMLEvents');
         evt.initEvent('click', false, true);
         el.dispatchEvent(evt);
-        document.body.focus();
     }
 
     beforeEach(function () {
@@ -91,7 +91,7 @@ describe('TinyComplete', function () {
                 }
             });
             addInput(82, 'r');
-            var lengthOfItems = document.querySelectorAll('#autocomplete-items-container p').length;
+            var lengthOfItems = document.querySelectorAll('.autocomplete-items-container p').length;
 
             expect(lengthOfItems).toBe(10);
         });
@@ -151,29 +151,31 @@ describe('TinyComplete', function () {
     });
 
     describe('properly shows and hides list of options', function () {
-        it('shows the results on focus of box', function () {
+        it('shows the results on focus', function () {
             addInput(82, 'r');
             document.getElementById('jokes').focus();
-            var display = document.getElementById('autocomplete-items-container').style.display;
+            jasmine.clock().tick(400);
+            var display = document.querySelector('.autocomplete-items-container').style.display;
 
             expect(display).toBe('block');
         });
 
-        it('hides the results on click of document', function () {
+        it('hides the results on focus of another element', function () {
             addInput(82, 'r');
             getInputEl().focus();
             document.getElementById('dumby1').focus();
-            clickOnEl(document);
+            jasmine.clock().tick(800);
 
-            expect(document.getElementById('autocomplete-items-container').style.display).toBe('none');
+            expect(document.querySelector('.autocomplete-items-container').style.display).toBe('none');
         });
 
         it('keeps the result if input box still has focus', function () {
             addInput(82, 'r');
             document.getElementById('jokes').focus();
+            jasmine.clock().tick(800);
             clickOnEl(document);
 
-            expect(document.getElementById('autocomplete-items-container').style.display).toBe('block');
+            expect(document.querySelector('.autocomplete-items-container').style.display).toBe('block');
         });
     });
 
@@ -181,17 +183,12 @@ describe('TinyComplete', function () {
         it('hides the results on click of option', function () {
             addInput(82, 'r');
             document.getElementById('jokes').focus();
-            clickOnEl(document.getElementById('autocomplete-items-container'));
+            jasmine.clock().tick(400);
+            clickOnEl(document.querySelector('.autocomplete-items-container'));
+            document.body.focus();
+            jasmine.clock().tick(400);
 
-            expect(document.getElementById('autocomplete-items-container').style.display).toBe('none');
-        });
-
-        it('does not hide options when click on input el', function () {
-            addInput(82, 'r');
-            getInputEl().focus();
-            clickOnEl(getInputEl());
-
-            expect(document.getElementById('autocomplete-items-container').style.display).toBe('block');
+            expect(document.querySelector('.autocomplete-items-container').style.display).toBe('none');
         });
     });
 
