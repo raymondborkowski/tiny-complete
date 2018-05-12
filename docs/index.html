@@ -51,7 +51,7 @@
     var TC = new TinyComplete({
         id: 'city',
         defaultVals: ['LA','Miami','Detroit','NYC','NYC'],
-        onChange: function(tinyCompareObject) {
+        onInput: function(tinyCompareObject) {
             if (tinyCompareObject.query.length > 2 && tinyCompareObject.defaultVals.length < 5) {
                 TC.request('https://a.intentmedia.net/adServer/airports?q=' + tinyCompareObject.query, function(response) {
                     TC.masterList = TC.masterList.concat(JSON.parse(response).results.map(function(record) { return record.value }));
@@ -68,7 +68,7 @@
     var TC2 = new TinyComplete({
         id: 'city2',
         defaultVals: [{key: 'DTW', val: 'Detroit'}, {key: 'MIA', val: 'Miami'}, {key: 'NYC', val: 'NYC'}, {key: 'LAX', val: 'LA'}],
-        onChange: function(tinyCompareObject) {
+        onInput: function(tinyCompareObject) {
             if (tinyCompareObject.query.length > 2 && Object.keys(tinyCompareObject.defaultVals).length < 5) {
                 TC2.request('https://a.intentmedia.net/adServer/airports?q=' + tinyCompareObject.query, function(response) {
                     TC2.masterList = TC2.masterList.concat(JSON.parse(response).results.map(function(record) { return {key: record.key, val: record.value} }));

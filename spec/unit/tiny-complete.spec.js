@@ -30,7 +30,7 @@ describe('TinyComplete', function () {
         TC = new TinyComplete({
             id: 'jokes',
             defaultVals: ['ray', 'hi', 'detroit', 'nyc'],
-            onChange: function () {
+            onInput: function () {
                 getInputEl().setAttribute('cats', 'bobo');
             },
             maxResults: 15
@@ -86,7 +86,7 @@ describe('TinyComplete', function () {
             TC = new TinyComplete({
                 id: 'jokes',
                 defaultVals: ['r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'r8', 'r9', 'r10', 'r11', 'r12'],
-                onChange: function () {
+                onInput: function () {
                     getInputEl().setAttribute('cats', 'bobo');
                 }
             });

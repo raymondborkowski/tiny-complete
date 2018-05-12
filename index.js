@@ -60,6 +60,18 @@ function handleClick(inputEl, elClicked, cb) {
 }
 
 function listeners(el, listContainer, options) {
+
+    function addActive(x) {
+        if (!x) return false;
+        if (currentFocus >= x.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = (x.length - 1);
+        if (document.querySelector('.autocomplete-hover')) {
+            document.querySelector('.autocomplete-hover').classList.remove('autocomplete-hover');
+        }
+
+        x[currentFocus].classList.add('autocomplete-hover');
+    }
+
     listContainer.addEventListener('click', function (e) {
         handleClick(el, e.target, options.onClick || function () {});
         listContainer.style.display = 'none';
@@ -71,6 +83,23 @@ function listeners(el, listContainer, options) {
 
     el.addEventListener('focus', function () {
         setTimeout(function () { listContainer.style.display = 'block'; }, 200);
+    });
+
+    var currentFocus = -1;
+    el.addEventListener('keydown', function(e) {
+        var x = document.querySelector('.autocomplete-items-container').children;
+        if (e.keyCode === 40) {
+            currentFocus++;
+            addActive(x);
+        } else if (e.keyCode === 38) {
+            currentFocus--;
+            addActive(x);
+        } else if (e.keyCode === 13) {
+            e.preventDefault();
+            if (currentFocus > -1) {
+                x[currentFocus].click();
+            }
+        }
     });
 }
 
@@ -97,12 +126,12 @@ function addDropDownHTML(el, options) {
 function bindToInput(options) {
     var _this = this;
     var inputEl = window.document.getElementById(options.id);
-    inputEl.addEventListener('keyup', function () {
+    inputEl.addEventListener('input', function () {
         _this.masterList = dedupe(_this.masterList);
         _this.query = this.value;
         _this.defaultVals = filterResults(_this.masterList, _this.query);
         addDropDownHTML.call(_this, inputEl, options);
-        options.onChange ? options.onChange(_this) : /* istanbul ignore next */ function () {};
+        options.onInput ? options.onInput(_this) : /* istanbul ignore next */ function () {};
     });
 }
 
