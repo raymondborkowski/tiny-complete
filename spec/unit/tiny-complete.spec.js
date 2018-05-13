@@ -9,7 +9,7 @@ describe('TinyComplete', function () {
     }
 
     function addInput(keyCode, value) {
-        var event = new window.KeyboardEvent( 'keyup', { keyCode: keyCode } );
+        var event = new window.Event('input');
         var inputEl = getInputEl();
         inputEl.setAttribute('value', value);
         inputEl.innerText = value;

@@ -60,7 +60,6 @@ function handleClick(inputEl, elClicked, cb) {
 }
 
 function listeners(el, listContainer, options) {
-
     function addActive(x) {
         if (!x) return false;
         if (currentFocus >= x.length) currentFocus = 0;
@@ -86,7 +85,7 @@ function listeners(el, listContainer, options) {
     });
 
     var currentFocus = -1;
-    el.addEventListener('keydown', function(e) {
+    el.addEventListener('keydown', function (e) {
         var x = document.querySelector('.autocomplete-items-container').children;
         if (e.keyCode === 40) {
             currentFocus++;
