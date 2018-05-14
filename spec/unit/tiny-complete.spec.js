@@ -14,6 +14,13 @@ describe('TinyComplete', function () {
         inputEl.setAttribute('value', value);
         inputEl.innerText = value;
         inputEl.dispatchEvent(event);
+        return event;
+    }
+
+    function keyEvent(keyCode, overrideEl) {
+        var event = new window.KeyboardEvent( 'keydown', { keyCode: keyCode } );
+        var inputEl = overrideEl || getInputEl();
+        inputEl.dispatchEvent(event);
     }
 
     function clickOnEl(el) {
@@ -23,7 +30,7 @@ describe('TinyComplete', function () {
     }
 
     beforeEach(function () {
-        var dom = new JSDOM('<!DOCTYPE html><body><input id="dumby1" type="text" /><input id="jokes" type="text" class="jokes" name="jokes" placeholder="Enter your joke term" /><div></div></body>', { pretendToBeVisual: true });
+        var dom = new JSDOM('<!DOCTYPE html><body><input id="dumby1" type="text" /><input id="jokes" type="text" name="jokes" placeholder="Enter your joke term" /><div></div></body>', { pretendToBeVisual: true });
         global.window = dom.window;
         global.document = dom.window.document;
         global.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
@@ -181,14 +188,84 @@ describe('TinyComplete', function () {
 
     describe('click of option', function () {
         it('hides the results on click of option', function () {
-            addInput(82, 'r');
             document.getElementById('jokes').focus();
+            addInput(82, 'r');
             jasmine.clock().tick(400);
             clickOnEl(document.querySelector('.autocomplete-items-container'));
             document.body.focus();
             jasmine.clock().tick(400);
 
             expect(document.querySelector('.autocomplete-items-container').style.display).toBe('none');
+        });
+
+        it('navigates through list and highlights ray', function () {
+            addInput(82, 'r');
+            document.getElementById('jokes').focus();
+            jasmine.clock().tick(400);
+            keyEvent(40);
+
+            expect(document.querySelectorAll('.autocomplete-hover').length).toBe(1);
+            expect(document.querySelectorAll('.autocomplete-hover')[0].className).toBe('autocomplete-options autocomplete-hover');
+            expect(document.querySelectorAll('.autocomplete-hover')[0].innerHTML).toBe('ray');
+        });
+
+        it('navigates through list twice and highlights ray', function () {
+            addInput(82, 'r');
+            document.getElementById('jokes').focus();
+            jasmine.clock().tick(400);
+            keyEvent(40);
+            keyEvent(40);
+            keyEvent(40);
+
+            expect(document.querySelectorAll('.autocomplete-hover').length).toBe(1);
+            expect(document.querySelectorAll('.autocomplete-hover')[0].className).toBe('autocomplete-options autocomplete-hover');
+            expect(document.querySelectorAll('.autocomplete-hover')[0].innerHTML).toBe('ray');
+        });
+
+        it('navigates backwards', function () {
+            addInput(82, 'r');
+            document.getElementById('jokes').focus();
+            jasmine.clock().tick(400);
+            keyEvent(38);
+
+            expect(document.querySelectorAll('.autocomplete-hover').length).toBe(1);
+            expect(document.querySelectorAll('.autocomplete-hover')[0].className).toBe('autocomplete-options autocomplete-hover');
+            expect(document.querySelectorAll('.autocomplete-hover')[0].innerHTML).toBe('detroit');
+        });
+
+        it('navigates through list and backwards', function () {
+            addInput(82, 'r');
+            document.getElementById('jokes').focus();
+            jasmine.clock().tick(400);
+            keyEvent(40);
+            keyEvent(40);
+
+            expect(document.querySelectorAll('.autocomplete-hover')[0].innerHTML).toBe('detroit');
+            expect(document.querySelectorAll('.autocomplete-hover')[0].className).toBe('autocomplete-options autocomplete-hover');
+
+            keyEvent(38);
+
+            expect(document.querySelectorAll('.autocomplete-hover')[0].innerHTML).toBe('ray');
+            expect(document.querySelectorAll('.autocomplete-hover')[0].className).toBe('autocomplete-options autocomplete-hover');
+        });
+
+        it('navigates through list and hits enter', function () {
+            addInput(82, 'r');
+            document.getElementById('jokes').focus();
+            jasmine.clock().tick(400);
+            keyEvent(40);
+            keyEvent(13);
+
+            expect(document.getElementById('jokes').innerText).toBe('r');
+        });
+
+        it('does nothing', function () {
+            addInput(82, 'r');
+            document.getElementById('jokes').focus();
+            jasmine.clock().tick(400);
+            keyEvent(13);
+
+            expect(document.getElementById('jokes').innerText).toBe('r');
         });
     });
 
