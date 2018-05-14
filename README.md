@@ -12,7 +12,7 @@
 
 *Lightweight, dependency free type-ahead/autocomplete solution!*
 
-[View Demo](https://raymondborkowski.github.io/tiny-complete/index.html)
+[View Demo](https://raymondborkowski.github.io/tiny-complete/index.html) <br>
 ![](./docs/example.png)
 
 ## Install
@@ -23,16 +23,18 @@ HTML
 
 ```html
 <div class="tiny-complete">
-    <input id="jokes" type="text" name="jokes" placeholder="Enter your joke term">
+    <input id="cities" type="text" name="search" placeholder="Enter your search term">
+    <input id="cities2" type="text" name="search2" placeholder="Enter your search term">
 </div>
 ```
+Example of using an array of vals when K/V pairs are not needed
 ```js
 var TC = new TinyComplete({
-    id: 'jokes',
+    id: 'cities',
     defaultVals: ['ray', 'hi', 'detroit', 'nyc', 'nyc'],
     onChange: function(tinyCompareObject) {
         if (tinyCompareObject.query.length > 2 && tinyCompareObject.defaultVals.length < 5) {
-            TC.request('https://a.intentmedia.net/adServer/airports?q=' + tinyCompareObject.query, function(response) {
+            TC.request('url_goes_here' + tinyCompareObject.query, function(response) {
                 TC.defaultVals = JSON.parse(response).results.map(function(record) { return record.value });
             });
         }
@@ -40,11 +42,30 @@ var TC = new TinyComplete({
     maxResults: 15,
 });
 ```
+Example of using objects. Please set object using KV pairs
+
+```js
+    var TC2 = new TinyComplete({
+        id: 'cities',
+        defaultVals: [{key: 'DTW', val: 'Detroit'}, {key: 'MIA', val: 'Miami'}, {key: 'NYC', val: 'NYC'}, {key: 'LAX', val: 'LA'}],
+        onInput: function(tinyCompareObject) {
+            if (tinyCompareObject.query.length > 2 && Object.keys(tinyCompareObject.defaultVals).length < 5) {
+                TC2.request('url_goes_here' + tinyCompareObject.query, function(response) {
+                    TC2.masterList = TC2.masterList.concat(JSON.parse(response).results.map(function(record) { return {key: record.key, val: record.value} }));
+                });
+            }
+        },
+        onClick: function(val, key) {
+            console.log(val, key);
+        },
+        maxResults: 15,
+    });
+```
 
 ## Benchmarking Size (`npm package-size`):
 |Typeahead Packages  | minified  |  Gzipped |
 | ------------- | ------------- | ------------- |
-| tiny-complete  | 3.31kB |1.43kB|
+| tiny-complete  | 2.71 KB |1.06 KB|   
 
 ## Developing and contributing to tiny-complete
 ### Folder structure
