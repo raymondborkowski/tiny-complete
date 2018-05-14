@@ -96,7 +96,7 @@ function addDropDownHTML(el, options) {
     parentNode.children.length > 1 && parentNode.removeChild(parentNode.lastChild);
     var listContainer = document.createElement('div');
     listContainer.setAttribute('class', 'autocomplete-items-container');
-    listContainer.classList.add(options.id);
+    listContainer.classList.add(document.activeElement.id);
     parentNode.appendChild(listContainer);
     positionElXAxis(el, listContainer);
     for (var i = 0; (i < _this.defaultVals.length || i < Object.keys(_this.defaultVals).length) && i < maxResults; i++) {
@@ -110,9 +110,9 @@ function addDropDownHTML(el, options) {
     listeners(el, listContainer, options);
 }
 
-function bindToInput(options) {
+function bindToInput(options, inputEl) {
     var _this = this;
-    var inputEl = window.document.getElementById(options.id);
+    inputEl = inputEl || window.document.getElementById(options.id);
     inputEl.addEventListener('input', function () {
         _this.masterList = dedupe(_this.masterList);
         _this.query = this.value;
@@ -123,7 +123,7 @@ function bindToInput(options) {
     var currentFocus = -1;
     inputEl.addEventListener('keydown', function (e) {
         try {
-            var x = document.querySelector('.' + options.id).children;
+            var x = document.querySelector('.' + document.activeElement.id).children;
             if (e.keyCode === 40) {
                 currentFocus++;
                 currentFocus = addActive(x, currentFocus);
@@ -142,7 +142,14 @@ function TinyComplete(options) {
     this.masterList = dedupe(options.defaultVals);
     this.defaultVals = this.masterList;
     this.query = '';
-    bindToInput.call(this, options);
+    if (Array.isArray(options.id)) {
+        var _this = this;
+        options.id.forEach(function (id) {
+            bindToInput.call(_this, options, window.document.getElementById(id));
+        });
+    } else {
+        bindToInput.call(this, options);
+    }
 }
 
 TinyComplete.prototype.nuke = function () {};
