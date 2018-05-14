@@ -51,6 +51,12 @@ function dedupe(list, i) {
     });
 }
 
+function removeHoverClass() {
+    if (document.querySelector('.autocomplete-hover')) {
+        document.querySelector('.autocomplete-hover').classList.remove('autocomplete-hover');
+    }
+}
+
 function handleClick(inputEl, elClicked, cb) {
     var val = elClicked.innerText;
     var key = elClicked.getAttribute('key');
@@ -59,10 +65,19 @@ function handleClick(inputEl, elClicked, cb) {
     cb(val, key);
 }
 
+function addActive(x, i) {
+    if (i >= x.length) i = 0;
+    if (i < 0) i = (x.length - 1);
+    removeHoverClass();
+    x[i].classList.add('autocomplete-hover');
+    return i;
+}
+
 function listeners(el, listContainer, options) {
     listContainer.addEventListener('click', function (e) {
         handleClick(el, e.target, options.onClick || function () {});
         listContainer.style.display = 'none';
+        removeHoverClass();
     });
 
     el.addEventListener('blur', function () {
@@ -81,6 +96,7 @@ function addDropDownHTML(el, options) {
     parentNode.children.length > 1 && parentNode.removeChild(parentNode.lastChild);
     var listContainer = document.createElement('div');
     listContainer.setAttribute('class', 'autocomplete-items-container');
+    listContainer.classList.add(options.id);
     parentNode.appendChild(listContainer);
     positionElXAxis(el, listContainer);
     for (var i = 0; (i < _this.defaultVals.length || i < Object.keys(_this.defaultVals).length) && i < maxResults; i++) {
@@ -97,12 +113,27 @@ function addDropDownHTML(el, options) {
 function bindToInput(options) {
     var _this = this;
     var inputEl = window.document.getElementById(options.id);
-    inputEl.addEventListener('keyup', function () {
+    inputEl.addEventListener('input', function () {
         _this.masterList = dedupe(_this.masterList);
         _this.query = this.value;
         _this.defaultVals = filterResults(_this.masterList, _this.query);
         addDropDownHTML.call(_this, inputEl, options);
-        options.onChange ? options.onChange(_this) : /* istanbul ignore next */ function () {};
+        options.onInput ? options.onInput(_this) : /* istanbul ignore next */ function () {};
+    });
+    var currentFocus = -1;
+    inputEl.addEventListener('keydown', function (e) {
+        try {
+            var x = document.querySelector('.' + options.id).children;
+            if (e.keyCode === 40) {
+                currentFocus++;
+                currentFocus = addActive(x, currentFocus);
+            } else if (e.keyCode === 38) {
+                currentFocus--;
+                currentFocus = addActive(x, currentFocus);
+            } else if (e.keyCode === 13 && currentFocus > -1) {
+                x[currentFocus].click();
+            }
+        } catch (err) {} // eslint-disable-line no-empty
     });
 }
 
