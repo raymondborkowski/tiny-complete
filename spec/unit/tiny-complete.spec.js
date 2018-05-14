@@ -8,18 +8,19 @@ describe('TinyComplete', function () {
         return window.document.getElementById('jokes');
     }
 
-    function addInput(keyCode, value) {
+    function addInput(keyCode, value, overrideEl) {
         var event = new window.Event('input');
-        var inputEl = getInputEl();
+        var inputEl = overrideEl || getInputEl();
+        inputEl.focus();
         inputEl.setAttribute('value', value);
         inputEl.innerText = value;
         inputEl.dispatchEvent(event);
         return event;
     }
 
-    function keyEvent(keyCode, overrideEl) {
+    function keyEvent(keyCode) {
         var event = new window.KeyboardEvent( 'keydown', { keyCode: keyCode } );
-        var inputEl = overrideEl || getInputEl();
+        var inputEl = getInputEl();
         inputEl.dispatchEvent(event);
     }
 
@@ -59,6 +60,19 @@ describe('TinyComplete', function () {
 
         it('sets empty string for start query', function () {
             expect(TC.query).toBe('');
+        });
+
+        it('handles an array of ids', function () {
+            TC = new TinyComplete({
+                id: ['jokes', 'dumby1'],
+                defaultVals: [{key: '1', val: 'dog'}, {key: '2', val: 'cat'}, {key: '3', val: 'pig'}, {key: '4', val: 'rooster'}]
+            });
+
+            addInput(82, 'd', document.getElementById('dumby1'));
+            var dumby1 = document.getElementsByClassName('dumby1')[0];
+            jasmine.clock().tick(400);
+
+            expect(dumby1.children.length).toBe(1);
         });
 
         describe('Handles no valid options', function () {
@@ -224,7 +238,6 @@ describe('TinyComplete', function () {
 
         it('navigates backwards', function () {
             addInput(82, 'r');
-            document.getElementById('jokes').focus();
             jasmine.clock().tick(400);
             keyEvent(38);
 

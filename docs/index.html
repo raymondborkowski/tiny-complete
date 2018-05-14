@@ -26,12 +26,17 @@
         .autocomplete-items-container p {
             padding: 10px;
             cursor: pointer;
-            margin: 0;
             color: black;
+            margin: 0;
             background-color: #fff;
             border-bottom: 1px solid #d4d4d4;
         }
-        .autocomplete-items-container p:hover {
+
+        .autocomplete-items-container p.autocomplete-hover {
+            background-color: red;
+        }
+
+        .autocomplete-items-container p:hover, .autocomplete-hover {
             background-color: red;
         }
     </style>
