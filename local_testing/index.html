@@ -35,10 +35,6 @@
         .autocomplete-items-container p.autocomplete-hover {
             background-color: red;
         }
-
-        .autocomplete-items-container p:hover, .autocomplete-hover {
-            background-color: red;
-        }
     </style>
 </head>
 <body>
@@ -46,66 +42,50 @@
 
 <p>Type:</p>
 <div class="type-complete">
-    <input id="city" type="text" name="city" placeholder="This is the array example. Type a city.">
-</div>
-<div class="type-complete">
+    <input id="city" type="text" name="city" placeholder="This is the array example. Type a city."><br>
     <input id="city2" type="text" name="city" placeholder="This is the object example. Type a city.">
 </div>
-<div class="type-complete">
-    <input id="city3" type="text" name="city" placeholder="This is the array example. Type a city.">
-</div>
-<div class="type-complete">
-    <input id="city4" type="text" name="city" placeholder="This is the object example. Type a city.">
-</div>
 <script>
+    var TC, TC2;
+    function onInputArray(filteredVals, query) {
+        if (query.length > 2 && filteredVals.length < 5) {
+            fetch('https://a.intentmedia.net/adServer/airports?q=' + query)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function(response) {
+                    TC.addValues(response.results.map(function(record) { return record.value }));
+                });
+        }
+    }
+
+    function onInputObject(filteredVals, query) {
+        if (query.length > 2 && Object.keys(filteredVals).length < 5) {
+            fetch('https://a.intentmedia.net/adServer/airports?q=' + query)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function(response) {
+                    TC2.addValues(response.results.map(function(record) { return {key: record.key, val: record.value} }));
+                });
+        }
+    }
+
     // Example of using array values
-    var TC = new TinyComplete({
+    TC = new TinyComplete({
         id: 'city',
         defaultVals: ['LA','Miami','Detroit','NYC','NYC'],
-        onInput: function(tinyCompareObject) {
-            if (tinyCompareObject.query.length > 2 && tinyCompareObject.defaultVals.length < 5) {
-                TC.request('https://a.intentmedia.net/adServer/airports?q=' + tinyCompareObject.query, function(response) {
-                    TC.masterList = TC.masterList.concat(JSON.parse(response).results.map(function(record) { return record.value }));
-                });
-            }
-        },
-        onClick: function(val) {
-            console.log(val);
-        },
+        onInput: onInputArray,
+        onClick: function(val) { console.log(val); },
         maxResults: 15,
     });
 
     // Example of using objects. Please set object using KV pairs
-    var TC2 = new TinyComplete({
+    TC2 = new TinyComplete({
         id: 'city2',
-        defaultVals: [{key: 'DTW', val: 'Detroit'}, {key: 'MIA', val: 'Miami'}, {key: 'NYC', val: 'NYC'}, {key: 'LAX', val: 'LA'}],
-        onInput: function(tinyCompareObject) {
-            if (tinyCompareObject.query.length > 2 && Object.keys(tinyCompareObject.defaultVals).length < 5) {
-                TC2.request('https://a.intentmedia.net/adServer/airports?q=' + tinyCompareObject.query, function(response) {
-                    TC2.masterList = TC2.masterList.concat(JSON.parse(response).results.map(function(record) { return {key: record.key, val: record.value} }));
-                });
-            }
-        },
-        onClick: function(val, key) {
-            console.log(val, key);
-        },
-        maxResults: 15,
-    });
-
-    // Example using an array of ids
-    var TC3 = new TinyComplete({
-        id: ['city3', 'city4'],
-        defaultVals: [{key: 'DTW', val: 'Detroit'}, {key: 'MIA', val: 'Miami'}, {key: 'NYC', val: 'NYC'}, {key: 'LAX', val: 'LA'}],
-        onInput: function(tinyCompareObject) {
-            if (tinyCompareObject.query.length > 2 && Object.keys(tinyCompareObject.defaultVals).length < 5) {
-                TC3.request('https://a.intentmedia.net/adServer/airports?q=' + tinyCompareObject.query, function(response) {
-                    TC3.masterList = TC3.masterList.concat(JSON.parse(response).results.map(function(record) { return {key: record.key, val: record.value} }));
-                });
-            }
-        },
-        onClick: function(val, key) {
-            console.log(val, key);
-        },
+        defaultVals: [{key: 'DTW', val: 'Detroit (DTW)'}, {key: 'LAX', val: 'LA'}, {key: 'MIA', val: 'Miami'}, {key: 'NYC', val: 'NYC'}, {key: 'LAX', val: 'LAMP'}],
+        onInput: onInputObject,
+        onClick: function(val, key) { console.log(val, key); },
         maxResults: 15,
     });
 </script>

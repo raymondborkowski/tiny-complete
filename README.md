@@ -34,7 +34,7 @@ var TC = new TinyComplete({
     defaultVals: ['ray', 'hi', 'detroit', 'nyc', 'nyc'],
     onChange: function(tinyCompareObject) {
         if (tinyCompareObject.query.length > 2 && tinyCompareObject.defaultVals.length < 5) {
-            TC.request('url_goes_here' + tinyCompareObject.query, function(response) {
+            request('url_goes_here' + tinyCompareObject.query, function(response) {
                 TC.defaultVals = JSON.parse(response).results.map(function(record) { return record.value });
             });
         }
@@ -50,7 +50,7 @@ Example of using objects. Please set object using KV pairs
         defaultVals: [{key: 'DTW', val: 'Detroit'}, {key: 'MIA', val: 'Miami'}, {key: 'NYC', val: 'NYC'}, {key: 'LAX', val: 'LA'}],
         onInput: function(tinyCompareObject) {
             if (tinyCompareObject.query.length > 2 && Object.keys(tinyCompareObject.defaultVals).length < 5) {
-                TC2.request('url_goes_here' + tinyCompareObject.query, function(response) {
+                request('url_goes_here' + tinyCompareObject.query, function(response) {
                     TC2.masterList = TC2.masterList.concat(JSON.parse(response).results.map(function(record) { return {key: record.key, val: record.value} }));
                 });
             }
