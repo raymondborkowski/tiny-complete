@@ -72,7 +72,7 @@
         id: 'city',
         defaultVals: ['LA','Miami','Detroit','NYC','NYC'],
         onInput: onInputArray,
-        onClick: function(val) { console.log(val); },
+        onSelect: function(val) { console.log(val); },
         maxResults: 15,
     });
 
@@ -81,7 +81,7 @@
         id: 'city2',
         defaultVals: [{key: 'DTW', val: 'Detroit (DTW)'}, {key: 'LAX', val: 'LA'}, {key: 'MIA', val: 'Miami'}, {key: 'NYC', val: 'NYC'}, {key: 'LAX', val: 'LAMP'}],
         onInput: onInputObject,
-        onClick: function(val, key) { console.log(val, key); },
+        onSelect: function(val, key) { console.log(val, key); },
         maxResults: 15,
     });
 </script>

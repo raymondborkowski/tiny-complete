@@ -50,30 +50,11 @@ describe('TinyComplete', function () {
     });
 
     describe('InitialState', function () {
-        it('initial state hides results', function () {
-            expect(window.document.querySelector('.autocomplete-items-container')).toEqual(null);
-        });
-
         describe('Handles no valid options', function () {
-            it('console errs msg', function () {
-                spyOn(console, 'error');
-                TC = new TinyComplete();
-
-                expect(console.error).toHaveBeenCalledWith('Plz pass options into TinyComplete'); // eslint-disable-line no-console
-            });
         });
     });
 
     describe('Input', function () {
-        // TODO: Make this test fail tests if it throws an err
-        it('does not error out if no onchange is provided', function () {
-            TC = new TinyComplete({
-                id: 'jokes',
-                defaultVals: ['dumb'],
-                maxResults: 1
-            });
-        });
-
         describe('delete button hit', function () {
         });
     });
@@ -82,27 +63,9 @@ describe('TinyComplete', function () {
     });
 
     describe('click of option', function () {
-        it('navigates through list and hits enter', function () {
-            addInput(82, 'r');
-            document.getElementById('jokes').focus();
-            jasmine.clock().tick(400);
-            keyEvent(40);
-            keyEvent(13);
-
-            expect(document.getElementById('jokes').innerText).toBe('r');
-        });
-
-        xit('does nothing', function () {
-            addInput(82, 'r');
-            document.getElementById('jokes').focus();
-            jasmine.clock().tick(400);
-            keyEvent(13);
-
-            expect(document.getElementById('jokes').innerText).toBe('r');
-        });
     });
 
-    describe('Nuke', function () {
+    describe('Ads to List', function () {
 
     });
 
