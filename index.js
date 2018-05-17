@@ -104,7 +104,7 @@ function highlightFocusedOption(options, indexOfCurrentOption) {
     // Allow for going over and under in list
     var lengthOfOptions = options.length;
     if (indexOfCurrentOption >= lengthOfOptions) {
-        indexOfCurrentOption = 0;g
+        indexOfCurrentOption = 0;
     } else if (indexOfCurrentOption < 0) {
         indexOfCurrentOption = lengthOfOptions - 1;
     }
