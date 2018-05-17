@@ -65,7 +65,6 @@ describe('TinyComplete', function () {
     });
 
     describe('Input', function () {
-
         // TODO: Make this test fail tests if it throws an err
         it('does not error out if no onchange is provided', function () {
             TC = new TinyComplete({
@@ -116,5 +115,4 @@ describe('TinyComplete', function () {
             expect(module.children[0].exports).toBe(TinyComplete);
         });
     });
-
 });

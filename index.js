@@ -5,24 +5,29 @@
  */
 
 function filterResults(list, query) {
-    return list.filter(function (record) { return (record.val || record).toLowerCase().indexOf(query.toLowerCase()) !== -1 && record; });
+    return list.filter(function (record) {
+        return (record.val || record).toLowerCase().indexOf(query.toLowerCase()) !== -1 && record;
+    });
 }
 
 function dedupe(list) {
     return list.filter(function (item, index, array) {
-        return item.key ? array.map(function (mapItem){ return mapItem.val; }).indexOf(item.val) === index : array.indexOf(item) === index;
+        return item.key ? array.map(function (mapItem) {
+            return mapItem.val;
+        }).indexOf(item.val) === index : array.indexOf(item) === index;
     });
 }
 
 /*
- *
- * Listeners
- *
- */
+     *
+     * Listeners
+     *
+     */
 
-function listContainerListeners(el, listContainer, options) {
+function listContainerListeners(el, listContainer, onClick) {
     listContainer.addEventListener('click', function (e) {
-        setKVofInputEl(el, e.target, options.onClick || function () {});
+        setKVofInputEl(el, e.target, onClick || function () {
+        });
         listContainerDisplay(listContainer, 'none');
     });
 
@@ -40,10 +45,10 @@ function listContainerListeners(el, listContainer, options) {
 }
 
 /*
- *
- * DOM Changes
- *
- */
+     *
+     * DOM Changes
+     *
+     */
 
 function positionListNearInput(parent, el) {
     var parentStyles = parent.getBoundingClientRect();
@@ -59,52 +64,47 @@ function setKVofInputEl(inputEl, elClicked, cb) {
 }
 
 function listContainerDisplay(el, displayStyle) {
-    setTimeout(function () { el.style.display = displayStyle; }, 200);
+    setTimeout(function () {
+        el.style.display = displayStyle;
+    }, 200);
 }
 
-// TODO: Cleanup
 function addDropDownHTML(el, vals, options) {
-    var parentNode = el.parentNode;
-    var maxResults = options.maxResults || 10;
-    var shownVals = vals;
-    var listContainer = document.createElement('div');
-
-    if (el.nextSibling.classList && el.nextSibling.classList.contains(options.id)) {
-        parentNode.removeChild(el.nextSibling);
+    // Remove old dropdown list
+    var siblingEl = el.nextSibling;
+    if (siblingEl.classList && siblingEl.classList.contains('tc-' + options.id)) {
+        el.parentNode.removeChild(siblingEl);
     }
-    listContainer.setAttribute('class', 'autocomplete-items-container');
-    listContainer.classList.add(options.id);
+
+    // Create new list
+    var listContainer = document.createElement('div');
+    listContainer.setAttribute('class', 'tc-contain tc-' + options.id);
     el.insertAdjacentElement('afterend', listContainer);
     positionListNearInput(el, listContainer);
-    for (var i = 0; (i < shownVals.length || i < Object.keys(shownVals).length) && i < maxResults; i++) {
-        var choice = document.createElement('p');
-        choice.setAttribute('class', 'autocomplete-options');
-        choice.innerHTML = shownVals[i].val || shownVals[i];
-        choice.setAttribute('key', shownVals[i].key);
-        listContainer.appendChild(choice);
-    }
 
-    listContainerListeners(el, listContainer, options);
-}
+    vals.forEach(function (value) {
+        var choiceOption = document.createElement('p');
+        choiceOption.innerHTML = value.val || value;
+        choiceOption.setAttribute('key', value.key);
+        listContainer.appendChild(choiceOption);
+    });
 
-// TODO: Cleanup
-function removeHoverClass() {
-    var highlightedSelector = 'autocomplete-hover';
-    var highlightedElement = document.getElementsByClassName(highlightedSelector)[0];
-    highlightedElement && highlightedElement.classList.remove(highlightedSelector);
+    listContainerListeners(el, listContainer, options.onClick);
 }
 
 function addActiveClass(el) {
-    removeHoverClass();
-    el.classList.add('autocomplete-hover');
+    // Remove old hover class
+    var currentHoveredEl = document.getElementById('tc-hover');
+    currentHoveredEl && currentHoveredEl.removeAttribute('id');
+
+    el.setAttribute('id', 'tc-hover');
 }
 
-// TODO: Cleanup
 function highlightFocusedOption(options, indexOfCurrentOption) {
     // Allow for going over and under in list
     var lengthOfOptions = options.length;
-    if (indexOfCurrentOption >= lengthOfOptions)  {
-        indexOfCurrentOption = 0;
+    if (indexOfCurrentOption >= lengthOfOptions) {
+        indexOfCurrentOption = 0;g
     } else if (indexOfCurrentOption < 0) {
         indexOfCurrentOption = lengthOfOptions - 1;
     }
@@ -113,11 +113,10 @@ function highlightFocusedOption(options, indexOfCurrentOption) {
     return indexOfCurrentOption;
 }
 
-// TODO: Cleanup
 function navigateListListener(inputEl, id) {
-    var indexOfCurrentOption = 0;
+    var indexOfCurrentOption = -1;
     inputEl.addEventListener('keydown', function (e) {
-        var options = (document.querySelector('.' + id) || {}).children;
+        var options = (document.querySelector('.tc-' + id) || {}).children;
         var keycode = e.keyCode;
         if (options) {
             if (keycode === 40) {
@@ -127,39 +126,41 @@ function navigateListListener(inputEl, id) {
                 indexOfCurrentOption--;
                 indexOfCurrentOption = highlightFocusedOption(options, indexOfCurrentOption);
             } else if (keycode === 13) {
-                options[indexOfCurrentOption].click();
+                indexOfCurrentOption > 0 && options[indexOfCurrentOption].click();
             }
         }
     });
 }
 
 /*
- *
- * Internals
- *
- */
+     *
+     * Internals
+     *
+     */
 
-// TODO: Cleanup
 function TinyComplete(options) {
-    if (typeof options !== 'object') return console.error('Plz pass options into TinyComplete');  // eslint-disable-line no-console
-    var masterList = dedupe(options.defaultVals);
-    var userSearchQuery = '';
-    var valuesToShow = masterList;
-
-    function bindings(_this) {
-        var inputEl = window.document.getElementById(options.id);
+    function bindings() {
+        var inputEl = document.getElementById(options.id);
         inputEl.addEventListener('input', function () {
             userSearchQuery = this.value;
             valuesToShow = filterResults(masterList, userSearchQuery);
-            addDropDownHTML.call(_this, inputEl, valuesToShow, options);
-            options.onInput ? options.onInput(valuesToShow, userSearchQuery) : /* istanbul ignore next */ function () {};
+            addDropDownHTML(inputEl, valuesToShow, options);
+            options.onInput ? options.onInput(valuesToShow, userSearchQuery) : /* istanbul ignore next */ function () {
+            };
         });
         navigateListListener(inputEl, options.id);
     }
 
+    if (typeof options !== 'object') return;
+    var masterList = dedupe(options.defaultVals);
+    var valuesToShow = masterList;
+    var userSearchQuery = '';
+
     bindings(this);
-    this.addValues = function (vals) { masterList = dedupe(masterList.concat(vals));};
-    this.nuke = function () {};
+
+    this.addValues = function (vals) {
+        masterList = dedupe(masterList.concat(vals));
+    };
 }
 
 (function () {
