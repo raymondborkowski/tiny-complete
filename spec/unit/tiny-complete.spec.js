@@ -2,10 +2,21 @@ var TinyComplete = require('../../index');
 var JSDOM = require('jsdom').JSDOM;
 
 describe('TinyComplete', function () {
-    var TC;
     jasmine.clock().install();
+    var TC;
+
     function getInputEl() {
         return window.document.getElementById('jokes');
+    }
+
+    function getDropDownEl() {
+        return window.document.querySelector('.tc-contain');
+    }
+
+    function keyEvent(keyCode, inputEl) {
+        var event = new window.KeyboardEvent( 'keydown', { keyCode: keyCode } );
+        inputEl.dispatchEvent(event);
+        jasmine.clock().tick(400);
     }
 
     function addInput(keyCode, value, overrideEl) {
@@ -15,153 +26,243 @@ describe('TinyComplete', function () {
         inputEl.setAttribute('value', value);
         inputEl.innerText = value;
         inputEl.dispatchEvent(event);
-        return event;
+        keyEvent(keyCode, inputEl);
     }
 
-    function keyEvent(keyCode) {
-        var event = new window.KeyboardEvent( 'keydown', { keyCode: keyCode } );
-        var inputEl = getInputEl();
-        inputEl.dispatchEvent(event);
-    }
-
-    function clickOnEl(el) {
+    function clickOnEl(el, bubbles) {
+        bubbles = bubbles || false;
         var evt = document.createEvent('HTMLEvents');
-        evt.initEvent('click', false, true);
+        evt.initEvent('click', bubbles, true);
         el.dispatchEvent(evt);
+        el.focus();
+        jasmine.clock().tick(4000);
     }
 
-    beforeEach(function () {
+    function mouseover(el){
+        var ev = document.createEvent('MouseEvent');
+        ev.initMouseEvent(
+            'mouseover',
+            true /* bubble */, true /* cancelable */,
+            window, null,
+            0, 0, 0, 0, /* coordinates */
+            false, false, false, false, /* modifier keys */
+            0 /* left*/, null
+        );
+        el.dispatchEvent(ev);
+    }
+
+    function resetDOM() {
         var dom = new JSDOM('<!DOCTYPE html><body><input id="dumby1" type="text" /><input id="jokes" type="text" name="jokes" placeholder="Enter your joke term" /><div></div></body>', { pretendToBeVisual: true });
         global.window = dom.window;
         global.document = dom.window.document;
         global.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
+    }
+
+    beforeEach(function () {
+        resetDOM();
         TC = new TinyComplete({
             id: 'jokes',
-            defaultVals: ['ray', 'hi', 'detroit', 'nyc'],
+            defaultVals: ['Rockford', 'New York', 'Miami', 'rockford'],
             onInput: function () {
-                getInputEl().setAttribute('cats', 'bobo');
-            },
-            maxResults: 15
+                TC.addValues(['Rockland', 'Raleigh']);
+            }
         });
     });
 
-    describe('InitialState', function () {
-        it('initial state hides results', function () {
-            expect(window.document.querySelector('.autocomplete-items-container')).toEqual(null);
+    describe('InitialState - ', function () {
+        it('console errs msg if no options passed in', function () {
+            spyOn(console, 'error');
+            TC = new TinyComplete();
+
+            expect(console.error).toHaveBeenCalledWith(jasmine.any(String)); // eslint-disable-line no-console
         });
 
-        it('sets proper starting arr', function () {
-            expect(TC.defaultVals).toEqual(['ray', 'hi', 'detroit', 'nyc']);
-        });
+        it('does nothing if navigating no list', function () {
+            var inputEl = getInputEl();
+            document.getElementById('jokes').focus();
+            jasmine.clock().tick(800);
+            keyEvent(40, inputEl);
 
-        it('sets proper starting master list', function () {
-            expect(TC.masterList).toEqual(['ray', 'hi', 'detroit', 'nyc']);
-        });
-
-        it('sets empty string for start query', function () {
-            expect(TC.query).toBe('');
-        });
-
-        it('handles an array of ids', function () {
-            TC = new TinyComplete({
-                id: ['jokes', 'dumby1'],
-                defaultVals: [{key: '1', val: 'dog'}, {key: '2', val: 'cat'}, {key: '3', val: 'pig'}, {key: '4', val: 'rooster'}]
-            });
-
-            addInput(82, 'd', document.getElementById('dumby1'));
-            var dumby1 = document.getElementsByClassName('dumby1')[0];
-            jasmine.clock().tick(400);
-
-            expect(dumby1.children.length).toBe(1);
-        });
-
-        describe('Handles no valid options', function () {
-            it('console errs msg', function () {
-                spyOn(console, 'error');
-                TC = new TinyComplete();
-
-                expect(console.error).toHaveBeenCalledWith('Plz pass options into TinyComplete'); // eslint-disable-line no-console
-            });
+            expect(document.getElementById('tc-hover')).toBe(null);
         });
     });
 
-    describe('Input', function () {
-        it('filters down Arrays based on r keypress', function () {
+    describe('Dropdown - ', function () {
+        beforeEach(function () {
             addInput(82, 'r');
-
-            expect(TC.defaultVals).toEqual(['ray', 'detroit']);
+            document.getElementById('jokes').focus();
+            jasmine.clock().tick(800);
         });
 
-        it('filters down object based on r keypress', function () {
-            TC = new TinyComplete({
-                id: 'jokes',
-                defaultVals: [{key: '1', val: 'dog'}, {key: '2', val: 'cat'}, {key: '3', val: 'pig'}, {key: '4', val: 'rooster'}]
-            });
+        it('shows the dropdown list of options', function () {
+            var display = getDropDownEl().style.display;
 
-            addInput(82, 'r');
-
-            expect(TC.defaultVals).toEqual({0: {key: '4', val: 'rooster'}});
+            expect(display).toBe('block');
         });
 
-        it('defaults to show 10 if no max results', function () {
+        it('hides the dropdown list of options', function () {
+            var display = getDropDownEl().style.display;
+
+            expect(display).toBe('block');
+
+            var dumby1 = document.getElementById('dumby1');
+            clickOnEl(dumby1);
+            display = getDropDownEl().style.display;
+
+            expect(display).toBe('none');
+        });
+
+        it('has the correct class on dropdown', function () {
+            var classArr = getDropDownEl().classList;
+
+            expect(classArr[0]).toEqual('tc-contain');
+            expect(classArr[1]).toEqual('tc-jokes');
+        });
+
+        it('contains the correct values', function () {
+            var options = getDropDownEl().children;
+            var innerTxt = [];
+            for (var i = 0; i < options.length; i++) {
+                innerTxt.push(options[i].innerHTML);
+            }
+
+            expect(options.length).toEqual(3);
+            expect(innerTxt).toEqual(['Rockford', 'New York', 'rockford']);
+        });
+
+        it('contains the correct values after onInput is called', function () {
+            addInput(65, 'a');
+            document.getElementById('jokes').focus();
+            jasmine.clock().tick(800);
+
+            var options = getDropDownEl().children;
+            var innerTxt = [];
+            for (var i = 0; i < options.length; i++) {
+                innerTxt.push(options[i].innerHTML);
+            }
+
+            expect(options.length).toEqual(3);
+            expect(innerTxt).toEqual(['Miami', 'Rockland', 'Raleigh']);
+        });
+
+        it('shows a max of ten values by defaults', function () {
             TC = new TinyComplete({
                 id: 'jokes',
-                defaultVals: ['r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'r8', 'r9', 'r10', 'r11', 'r12'],
+                defaultVals: ['Rockford', 'New York', 'Miami', 'rockford', 'Rockford1', 'New York1', 'Miami1', 'rockford1', 'Rockford2', 'New York2', 'Miami2', 'rockford2'],
                 onInput: function () {
-                    getInputEl().setAttribute('cats', 'bobo');
+                    TC.addValues(['Rockland', 'Raleigh']);
                 }
             });
             addInput(82, 'r');
-            var lengthOfItems = document.querySelectorAll('.autocomplete-items-container p').length;
+            document.getElementById('jokes').focus();
+            jasmine.clock().tick(800);
+            var options = getDropDownEl().children;
 
-            expect(lengthOfItems).toBe(10);
+            expect(options.length).toEqual(10);
         });
 
-        it('sets cat to bobo onchange', function () {
-            addInput(82, 'r');
-
-            expect(getInputEl().getAttribute('cats')).toEqual('bobo');
-        });
-
-        // TODO: Make this test fail tests if it throws an err
-        it('does not error out if no onchange is provided', function () {
+        it('shows a max of what user sets for values length', function () {
             TC = new TinyComplete({
                 id: 'jokes',
-                defaultVals: ['dumb'],
-                maxResults: 1
+                defaultVals: ['Rockford', 'New York', 'Miami', 'rockford', 'Rockford1', 'New York1', 'Miami1', 'rockford1', 'Rockford2', 'New York2', 'Miami2', 'rockford2', 'Rockford3', 'New York3', 'Miami3', 'rockford3'],
+                onInput: function () {
+                    TC.addValues(['Rockland', 'Raleigh']);
+                },
+                maxResults: 11
             });
-        });
+            addInput(82, 'r');
+            document.getElementById('jokes').focus();
+            jasmine.clock().tick(800);
+            var options = getDropDownEl().children;
 
-        it('Adds key element to option if an object', function () {
+            expect(options.length).toEqual(11);
+        });
+    });
+
+    describe('click of option - ', function () {
+        beforeEach(function () {
             TC = new TinyComplete({
                 id: 'jokes',
-                defaultVals: [{key: '1', val: 'dog'}, {key: '2', val: 'cat'}, {key: '3', val: 'rooster'}, {key: '1', val: 'dog'}]
+                defaultVals: [{key: 'DTW', val: 'Detroit (DTW)'}, {key: 'LAX', val: 'LA'}, {key: 'MIA', val: 'Miami'}, {key: 'NYC', val: 'NYC'}, {key: 'LAX', val: 'LAMP'}],
+                onInput: function () {
+                    TC.addValues(['Rockland', 'Raleigh']);
+                },
+                maxResults: 15
             });
-
             addInput(82, 'r');
-
-            expect(document.getElementsByClassName('autocomplete-options')[0].getAttribute('key')).toBe('3');
+            document.getElementById('jokes').focus();
+            jasmine.clock().tick(800);
         });
 
-        describe('delete button hit', function () {
-            it('removes letter in TC.query when backspace is hit', function () {
-                addInput(82, 'r');
-                var originalQuery = TC.query;
-                addInput(46, '');
+        it('properly sets value of input box based on click', function () {
+            var inputEl = getInputEl();
+            var firstOption = getDropDownEl().children[0];
+            clickOnEl(firstOption, true);
 
-                expect(originalQuery).not.toEqual(TC.query);
-                expect(TC.query).toEqual('');
-            });
+            expect(inputEl.value).toBe('Detroit (DTW)');
+        });
+    });
 
-            it('removes previously applied filter to array', function () {
-                addInput('82', 'ray');
+    describe('dedupes - ', function () {
+        beforeEach(function () {
+            addInput(82, 'r');
+            document.getElementById('jokes').focus();
+            jasmine.clock().tick(800);
+        });
 
-                expect(TC.defaultVals).toEqual(['ray']);
+        it('dedupes the values of Arrays', function () {
+            var options = getDropDownEl().children;
+            var innerTxt = [];
+            for (var i = 0; i < options.length; i++) {
+                innerTxt.push(options[i].innerHTML);
+            }
 
-                addInput(46, '');
+            expect(options.length).toEqual(3);
+            expect(innerTxt).toEqual(['Rockford', 'New York', 'rockford']);
+        });
+    });
 
-                expect(TC.defaultVals.sort()).toEqual(['ray', 'hi', 'detroit', 'nyc'].sort());
-            });
+    describe('navigating through the list - ', function () {
+        beforeEach(function () {
+            addInput(82, 'r');
+            document.getElementById('jokes').focus();
+            jasmine.clock().tick(800);
+        });
+
+        it('navigates through list and highlights Rockford', function () {
+            var inputEl = getInputEl();
+            keyEvent(40, inputEl);
+
+            expect(document.querySelectorAll('#tc-hover').length).toBe(1);
+            expect(document.querySelectorAll('#tc-hover')[0].innerHTML).toBe('Rockford');
+        });
+
+        it('navigates backwards to bottom of list', function () {
+            var inputEl = getInputEl();
+            keyEvent(38, inputEl);
+
+            expect(document.querySelectorAll('#tc-hover').length).toBe(1);
+            expect(document.querySelectorAll('#tc-hover')[0].innerHTML).toBe('rockford');
+        });
+
+        it('navigates top to bottom and through bottom back to top', function () {
+            var inputEl = getInputEl();
+            keyEvent(40, inputEl);
+            keyEvent(40, inputEl);
+            keyEvent(40, inputEl);
+            keyEvent(40, inputEl);
+
+            expect(document.querySelectorAll('#tc-hover').length).toBe(1);
+            expect(document.querySelectorAll('#tc-hover')[0].innerHTML).toBe('Rockford');
+        });
+
+        it('navigates through list and highlights Rockford and hits enter', function () {
+            var inputEl = getInputEl();
+            keyEvent(40, inputEl);
+            keyEvent(13, inputEl);
+
+            expect(document.querySelectorAll('#tc-hover').length).toBe(1);
+            expect(document.querySelectorAll('#tc-hover')[0].innerHTML).toBe('Rockford');
         });
     });
 
@@ -171,149 +272,15 @@ describe('TinyComplete', function () {
         });
     });
 
-    describe('properly shows and hides list of options', function () {
-        it('shows the results on focus', function () {
-            addInput(82, 'r');
-            document.getElementById('jokes').focus();
-            jasmine.clock().tick(400);
-            var display = document.querySelector('.autocomplete-items-container').style.display;
-
-            expect(display).toBe('block');
-        });
-
-        it('hides the results on focus of another element', function () {
-            addInput(82, 'r');
-            getInputEl().focus();
-            document.getElementById('dumby1').focus();
-            jasmine.clock().tick(800);
-
-            expect(document.querySelector('.autocomplete-items-container').style.display).toBe('none');
-        });
-
-        it('keeps the result if input box still has focus', function () {
+    describe('adds class on mouseOver', function () {
+        it('adds class on mouseOver', function () {
             addInput(82, 'r');
             document.getElementById('jokes').focus();
             jasmine.clock().tick(800);
-            clickOnEl(document);
+            var firstChild = getDropDownEl();
+            mouseover(firstChild);
 
-            expect(document.querySelector('.autocomplete-items-container').style.display).toBe('block');
-        });
-    });
-
-    describe('click of option', function () {
-        it('hides the results on click of option', function () {
-            document.getElementById('jokes').focus();
-            addInput(82, 'r');
-            jasmine.clock().tick(400);
-            clickOnEl(document.querySelector('.autocomplete-items-container'));
-            document.body.focus();
-            jasmine.clock().tick(400);
-
-            expect(document.querySelector('.autocomplete-items-container').style.display).toBe('none');
-        });
-
-        it('navigates through list and highlights ray', function () {
-            addInput(82, 'r');
-            document.getElementById('jokes').focus();
-            jasmine.clock().tick(400);
-            keyEvent(40);
-
-            expect(document.querySelectorAll('.autocomplete-hover').length).toBe(1);
-            expect(document.querySelectorAll('.autocomplete-hover')[0].className).toBe('autocomplete-options autocomplete-hover');
-            expect(document.querySelectorAll('.autocomplete-hover')[0].innerHTML).toBe('ray');
-        });
-
-        it('navigates through list twice and highlights ray', function () {
-            addInput(82, 'r');
-            document.getElementById('jokes').focus();
-            jasmine.clock().tick(400);
-            keyEvent(40);
-            keyEvent(40);
-            keyEvent(40);
-
-            expect(document.querySelectorAll('.autocomplete-hover').length).toBe(1);
-            expect(document.querySelectorAll('.autocomplete-hover')[0].className).toBe('autocomplete-options autocomplete-hover');
-            expect(document.querySelectorAll('.autocomplete-hover')[0].innerHTML).toBe('ray');
-        });
-
-        it('navigates backwards', function () {
-            addInput(82, 'r');
-            jasmine.clock().tick(400);
-            keyEvent(38);
-
-            expect(document.querySelectorAll('.autocomplete-hover').length).toBe(1);
-            expect(document.querySelectorAll('.autocomplete-hover')[0].className).toBe('autocomplete-options autocomplete-hover');
-            expect(document.querySelectorAll('.autocomplete-hover')[0].innerHTML).toBe('detroit');
-        });
-
-        it('navigates through list and backwards', function () {
-            addInput(82, 'r');
-            document.getElementById('jokes').focus();
-            jasmine.clock().tick(400);
-            keyEvent(40);
-            keyEvent(40);
-
-            expect(document.querySelectorAll('.autocomplete-hover')[0].innerHTML).toBe('detroit');
-            expect(document.querySelectorAll('.autocomplete-hover')[0].className).toBe('autocomplete-options autocomplete-hover');
-
-            keyEvent(38);
-
-            expect(document.querySelectorAll('.autocomplete-hover')[0].innerHTML).toBe('ray');
-            expect(document.querySelectorAll('.autocomplete-hover')[0].className).toBe('autocomplete-options autocomplete-hover');
-        });
-
-        it('navigates through list and hits enter', function () {
-            addInput(82, 'r');
-            document.getElementById('jokes').focus();
-            jasmine.clock().tick(400);
-            keyEvent(40);
-            keyEvent(13);
-
-            expect(document.getElementById('jokes').innerText).toBe('r');
-        });
-
-        it('does nothing', function () {
-            addInput(82, 'r');
-            document.getElementById('jokes').focus();
-            jasmine.clock().tick(400);
-            keyEvent(13);
-
-            expect(document.getElementById('jokes').innerText).toBe('r');
-        });
-    });
-
-    describe('Nuke', function () {
-        it('properly nukes instance of TC', function () {
-            TC.nuke();
-        });
-    });
-
-    describe('Request', function () {
-        it('properly returns a request', function (done) {
-            TC.request('https://api.chucknorris.io/jokes/search?query=california', function (response) {
-                expect(JSON.parse(response).total).toEqual(11);
-                done();
-            });
-        });
-    });
-
-    describe('helpers', function () {
-        it('dedupes arrays', function () {
-            TC = new TinyComplete({
-                id: 'jokes',
-                defaultVals: ['ray', 'hi', 'detroit', 'nyc', 'nyc']
-            });
-
-            expect(TC.masterList).toEqual(['ray', 'hi', 'detroit', 'nyc']);
-        });
-
-        it('dedupes objects', function () {
-            TC = new TinyComplete({
-                id: 'jokes',
-                defaultVals: [{key: '1', val: 'dog'}, {key: '2', val: 'cat'}, {key: '3', val: 'pig'}, {key: '1', val: 'dog'}]
-            });
-
-            expect(TC.masterList).toEqual([{key: '1', val: 'dog'}, {key: '2', val: 'cat'}, {key: '3', val: 'pig'}]);
+            expect(firstChild.id).toContain('tc-hover');
         });
     });
 });

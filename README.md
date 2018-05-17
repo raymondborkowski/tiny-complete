@@ -27,45 +27,63 @@ HTML
     <input id="cities2" type="text" name="search2" placeholder="Enter your search term">
 </div>
 ```
-Example of using an array of vals when K/V pairs are not needed
+Example of using array values for default values
 ```js
-var TC = new TinyComplete({
-    id: 'cities',
-    defaultVals: ['ray', 'hi', 'detroit', 'nyc', 'nyc'],
-    onChange: function(tinyCompareObject) {
-        if (tinyCompareObject.query.length > 2 && tinyCompareObject.defaultVals.length < 5) {
-            TC.request('url_goes_here' + tinyCompareObject.query, function(response) {
-                TC.defaultVals = JSON.parse(response).results.map(function(record) { return record.value });
-            });
-        }
-    },
-    maxResults: 15,
+TC = new TinyComplete({
+    id: 'city',
+    defaultVals: ['LA','Miami','Detroit','NYC','NYC'],
+    onInput: onInputArray, // Callback will have (filteredValues, query_user_inputed)
+    onSelect: function(val) { console.log(val); },
+    maxResults: 15, // Defaults to 10
 });
 ```
-Example of using objects. Please set object using KV pairs
-
+// Example of using objects. Please set object using KV pairs
 ```js
-    var TC2 = new TinyComplete({
-        id: 'cities',
-        defaultVals: [{key: 'DTW', val: 'Detroit'}, {key: 'MIA', val: 'Miami'}, {key: 'NYC', val: 'NYC'}, {key: 'LAX', val: 'LA'}],
-        onInput: function(tinyCompareObject) {
-            if (tinyCompareObject.query.length > 2 && Object.keys(tinyCompareObject.defaultVals).length < 5) {
-                TC2.request('url_goes_here' + tinyCompareObject.query, function(response) {
-                    TC2.masterList = TC2.masterList.concat(JSON.parse(response).results.map(function(record) { return {key: record.key, val: record.value} }));
-                });
-            }
-        },
-        onClick: function(val, key) {
-            console.log(val, key);
-        },
-        maxResults: 15,
-    });
+TC2 = new TinyComplete({
+    id: 'city2',
+    defaultVals: [{key: 'DTW', val: 'Detroit (DTW)'}, {key: 'LAX', val: 'LA'}, {key: 'MIA', val: 'Miami'}, {key: 'NYC', val: 'NYC'}, {key: 'LAX', val: 'LAMP'}],
+    onInput: onInputObject,
+    onSelect: function(val, key) { console.log(val, key); },
+    maxResults: 15,  // Defaults to 10
+});
 ```
+Example onInput helpers that fetch new results and add them based on what the user inputs.
+```js
+var TC, TC2;
+function onInputArray(filteredVals, query) {
+    if (query.length > 2 && filteredVals.length < 5) {
+        fetch('https://yourUrlHere.com/?q=' + query)
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function(response) {
+                TC.addValues(response.results.map(function(record) { return record.value }));
+            });
+    }
+}
+
+function onInputObject(filteredVals, query) {
+    if (query.length > 2 && Object.keys(filteredVals).length < 5) {
+        fetch('https://yourUrlHere.com/?q=' + query)
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function(response) {
+                TC2.addValues(response.results.map(function(record) { return {key: record.key, val: record.value} }));
+            });
+    }
+}
+```
+
+## Publicly exposed methods
+- `TinyComplete.addValues(array_of_objects_or_strings)` - This will allow you to add new values dynamically to a cache of options
+- `onInput(filteredVals, query)` - On input callback will be executed with the filtered list that the user sees and the query that the user entered
+- `onSelect(val, key)` - On Select of an option from dropdown list, the callback will be executed with value of the input box, and key (if passed in)
 
 ## Benchmarking Size (`npm package-size`):
 |Typeahead Packages  | minified  |  Gzipped |
 | ------------- | ------------- | ------------- |
-| tiny-complete  | 2.71 KB |1.06 KB|   
+| tiny-complete  | 1.99 KB |925 B|   
 
 ## Developing and contributing to tiny-complete
 ### Folder structure
