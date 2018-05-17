@@ -26,8 +26,7 @@ function dedupe(list) {
 
 function listContainerListeners(el, listContainer, onSelect) {
     listContainer.addEventListener('click', function (e) {
-        setKVofInputEl(el, e.target, onSelect || function () {
-        });
+        setKVofInputEl(el, e.target, onSelect || function () {});
         listContainerDisplay(listContainer, 'none');
     });
 
@@ -56,7 +55,7 @@ function positionListNearInput(parent, el) {
 }
 
 function setKVofInputEl(inputEl, elClicked, cb) {
-    var val = elClicked.innerText;
+    var val = elClicked.innerHTML;
     var key = elClicked.getAttribute('key');
     inputEl.value = val;
     inputEl.setAttribute('key', key);
@@ -70,23 +69,23 @@ function listContainerDisplay(el, displayStyle) {
 }
 
 function addDropDownHTML(el, vals, options) {
-    // Remove old dropdown list
     var siblingEl = el.nextSibling;
+    var listContainer = document.createElement('div');
+
+    listContainer.setAttribute('class', 'tc-contain tc-' + options.id);
+    el.parentNode.insertBefore(listContainer, siblingEl);
     if (siblingEl.classList && siblingEl.classList.contains('tc-' + options.id)) {
         el.parentNode.removeChild(siblingEl);
     }
-
-    // Create new list
-    var listContainer = document.createElement('div');
-    listContainer.setAttribute('class', 'tc-contain tc-' + options.id);
-    el.insertAdjacentElement('afterend', listContainer);
     positionListNearInput(el, listContainer);
 
-    vals.forEach(function (value) {
-        var choiceOption = document.createElement('p');
-        choiceOption.innerHTML = value.val || value;
-        choiceOption.setAttribute('key', value.key);
-        listContainer.appendChild(choiceOption);
+    vals.forEach(function (value, index) {
+        if (index < (options.maxResults || 10)){
+            var choiceOption = document.createElement('p');
+            choiceOption.innerHTML = value.val || value;
+            choiceOption.setAttribute('key', value.key);
+            listContainer.appendChild(choiceOption);
+        }
     });
 
     listContainerListeners(el, listContainer, options.onSelect);
@@ -97,11 +96,12 @@ function addActiveClass(el) {
     var currentHoveredEl = document.getElementById('tc-hover');
     currentHoveredEl && currentHoveredEl.removeAttribute('id');
 
-    el.setAttribute('id', 'tc-hover');
+    el && el.setAttribute('id', 'tc-hover');
 }
 
 function highlightFocusedOption(options, indexOfCurrentOption) {
     // Allow for going over and under in list
+    options = options || [];
     var lengthOfOptions = options.length;
     if (indexOfCurrentOption >= lengthOfOptions) {
         indexOfCurrentOption = 0;
@@ -118,16 +118,14 @@ function navigateListListener(inputEl, id) {
     inputEl.addEventListener('keydown', function (e) {
         var options = (document.querySelector('.tc-' + id) || {}).children;
         var keycode = e.keyCode;
-        if (options) {
-            if (keycode === 40) {
-                indexOfCurrentOption++;
-                indexOfCurrentOption = highlightFocusedOption(options, indexOfCurrentOption);
-            } else if (keycode === 38) {
-                indexOfCurrentOption--;
-                indexOfCurrentOption = highlightFocusedOption(options, indexOfCurrentOption);
-            } else if (keycode === 13) {
-                indexOfCurrentOption > 0 && options[indexOfCurrentOption].click();
-            }
+        if (keycode === 40) {
+            indexOfCurrentOption++;
+            indexOfCurrentOption = highlightFocusedOption(options, indexOfCurrentOption);
+        } else if (keycode === 38) {
+            indexOfCurrentOption--;
+            indexOfCurrentOption = highlightFocusedOption(options, indexOfCurrentOption);
+        } else if (keycode === 13) {
+            indexOfCurrentOption >= 0 && options.length > 0 && options[indexOfCurrentOption].click();
         }
     });
 }
@@ -151,7 +149,7 @@ function TinyComplete(options) {
         navigateListListener(inputEl, options.id);
     }
 
-    if (typeof options !== 'object') return;
+    if (typeof options !== 'object') return console.error('Pass opts in');  // eslint-disable-line no-console
     var masterList = dedupe(options.defaultVals);
     var valuesToShow = masterList;
     var userSearchQuery = '';
