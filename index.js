@@ -24,9 +24,9 @@ function dedupe(list) {
      *
      */
 
-function listContainerListeners(el, listContainer, onClick) {
+function listContainerListeners(el, listContainer, onSelect) {
     listContainer.addEventListener('click', function (e) {
-        setKVofInputEl(el, e.target, onClick || function () {
+        setKVofInputEl(el, e.target, onSelect || function () {
         });
         listContainerDisplay(listContainer, 'none');
     });
@@ -89,7 +89,7 @@ function addDropDownHTML(el, vals, options) {
         listContainer.appendChild(choiceOption);
     });
 
-    listContainerListeners(el, listContainer, options.onClick);
+    listContainerListeners(el, listContainer, options.onSelect);
 }
 
 function addActiveClass(el) {
