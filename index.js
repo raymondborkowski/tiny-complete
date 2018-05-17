@@ -119,11 +119,9 @@ function navigateListListener(inputEl, id) {
         var options = (document.querySelector('.tc-' + id) || {}).children;
         var keycode = e.keyCode;
         if (keycode === 40) {
-            indexOfCurrentOption++;
-            indexOfCurrentOption = highlightFocusedOption(options, indexOfCurrentOption);
+            indexOfCurrentOption = highlightFocusedOption(options, indexOfCurrentOption += 1);
         } else if (keycode === 38) {
-            indexOfCurrentOption--;
-            indexOfCurrentOption = highlightFocusedOption(options, indexOfCurrentOption);
+            indexOfCurrentOption = highlightFocusedOption(options, indexOfCurrentOption -= 1);
         } else if (keycode === 13) {
             indexOfCurrentOption >= 0 && options.length > 0 && options[indexOfCurrentOption].click();
         }
