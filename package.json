@@ -1,6 +1,6 @@
 {
   "name": "tiny-complete",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Tiny complete is THE smallest auto complete package out there today",
   "main": "index.js",
   "scripts": {

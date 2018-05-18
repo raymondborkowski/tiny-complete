@@ -49,9 +49,8 @@ function listContainerListeners(el, listContainer, onSelect) {
      *
      */
 
-function positionListNearInput(parent, el) {
-    var parentStyles = parent.getBoundingClientRect();
-    el.style.cssText = 'min-width:' + parentStyles.width + 'px;left:' + parentStyles.left + 'px;';
+function setWidth(parent, el) {
+    el.style.minWidth = parent.offsetWidth + 'px';
 }
 
 function setKVofInputEl(inputEl, elClicked, cb) {
@@ -77,7 +76,7 @@ function addDropDownHTML(el, vals, options) {
     if (siblingEl.classList && siblingEl.classList.contains('tc-' + options.id)) {
         el.parentNode.removeChild(siblingEl);
     }
-    positionListNearInput(el, listContainer);
+    setWidth(el, listContainer);
 
     vals.forEach(function (value, index) {
         if (index < (options.maxResults || 10)){
