@@ -83,7 +83,11 @@ function onInputObject(filteredVals, query) {
 ## Benchmarking Size (`npm package-size`):
 |Typeahead Packages  | minified  |  Gzipped |
 | ------------- | ------------- | ------------- |
-| tiny-complete  | 1.99 KB |925 B|   
+| tiny-complete  | 1.87 KB |839 B|   
+| autocomplete | 13.47 KB | 4.46KB|
+| react-autocomplete | 16.36 KB | 5.54KB|
+| typeahead | 14 KB | 4.7 KB|
+| suggestions | 5.19 KB| 1.69 KB|
 
 ## Developing and contributing to tiny-complete
 ### Folder structure
