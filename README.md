@@ -33,10 +33,8 @@ var arrayToAddString = ['JFK'];
  
 var TC = new TinyComplete({
     id: 'city',
-    defaultVals: ['LA','Miami','Detroit','NYC','NYC'],
-    onInput: function (filteredVals, query) {
-        TC.addValues(arrayToAddString);
-    },
+    defaultVals: ['LA', 'Miami', 'Detroit', 'NYC'],
+    onInput: function (filteredVals, query) { TC.addValues(arrayToAddString); },
     onSelect: function(val) { console.log(val); },
     maxResults: 15,
 });
@@ -50,10 +48,8 @@ var arrayToAddObject = [{
  
 var TC2 = new TinyComplete({
     id: 'city2',
-    defaultVals: [{key: 'DTW', val: 'Detroit (DTW)'}, {key: 'LAX', val: 'LA'}, {key: 'MIA', val: 'Miami'}, {key: 'NYC', val: 'NYC'}, {key: 'LAX', val: 'LAMP'}],
-    onInput: function(filteredVals, query) {
-            TC2.addValues(arrayToAddObject);
-    },
+    defaultVals: [{key: 'DTW', val: 'Detroit (DTW)'}, {key: 'LAX', val: 'LA'}],
+    onInput: function(filteredVals, query) { TC2.addValues(arrayToAddObject); },
     onSelect: function(val, key) { console.log(val, key); },
     maxResults: 15,
 });
