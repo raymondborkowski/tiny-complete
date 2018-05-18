@@ -9,27 +9,37 @@
             border: 1px solid transparent;
             background-color: #fff;
             padding: 10px;
-            font-size: 16px;
+            font-size: 12px;
             width: 25%;
         }
         .tc-contain {
             position: absolute;
-            border: 1px solid #d4d4d4;
-            border-bottom: none;
-            border-top: none;
-            z-index: 99;
+            z-index: 100;
         }
+
         .tc-contain p {
             padding: 10px;
             cursor: pointer;
             color: black;
+            font-size: 12px;
             margin: 0;
             background-color: #fff;
-            border-bottom: 1px solid #d4d4d4;
+            border-right: 1px solid #aaa;
+            border-left: 1px solid #aaa;
+        }
+        .tc-contain p:first-child {
+            border-top: 1px solid black;
+            margin-top: -3px;
+        }
+
+        .tc-contain p:last-child {
+            border-radius: 0 0 10px 10px;
+            border-bottom: 1px solid #aaa;
         }
 
         .tc-contain p#tc-hover {
-            background-color: red;
+            background-color: #50a5e6;
+            color: white;
         }
     </style>
 </head>
