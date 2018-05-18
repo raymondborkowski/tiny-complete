@@ -10,80 +10,70 @@
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fraymondborkowski%2Ftiny-complete.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fraymondborkowski%2Ftiny-complete?ref=badge_shield)
 [![downloads](https://img.shields.io/npm/dt/tiny-complete.svg)](https://img.shields.io/npm/dt/tiny-complete.svg)
 
-*Lightweight, dependency free type-ahead/autocomplete solution!*
-
-[View Demo](https://raymondborkowski.github.io/tiny-complete/index.html) <br>
+Lightweight, dependency free type-ahead/autocomplete solution! Get this running in under 5 minutes!
+<br>
+<br>
+[View Demo](https://raymondborkowski.github.io/tiny-complete/index.html) <br><br>
 ![](./docs/example.png)
 
 ## Install
 `npm i tiny-complete --save`
-## Use
-HTML
-* It is important to position the parent element rather than the input so the dropdown container knows where to position itself.
-
+## The Code
+### Example
+The html input items on your page that you wish for tiny-complete to be attached:
 ```html
 <div class="tiny-complete">
-    <input id="cities" type="text" name="search" placeholder="Enter your search term">
-    <input id="cities2" type="text" name="search2" placeholder="Enter your search term">
+    <input id="city">
+    <input id="city2">
 </div>
 ```
-Example of using array values for default values
+Example of using an array of strings for default values:
 ```js
-TC = new TinyComplete({
+var arrayToAddString = ['JFK'];
+ 
+var TC = new TinyComplete({
     id: 'city',
     defaultVals: ['LA','Miami','Detroit','NYC','NYC'],
-    onInput: onInputArray, // Callback will have (filteredValues, query_user_inputed)
+    onInput: function (filteredVals, query) {
+        TC.addValues(arrayToAddString);
+    },
     onSelect: function(val) { console.log(val); },
-    maxResults: 15, // Defaults to 10
+    maxResults: 15,
 });
 ```
-// Example of using objects. Please set object using KV pairs
+Example of using array of objects. Please set object using `key, val` pairs:
 ```js
-TC2 = new TinyComplete({
+var arrayToAddObject = [{
+    key: 'JFK',
+    val: 'New York (JFK) - United States'
+}];
+ 
+var TC2 = new TinyComplete({
     id: 'city2',
     defaultVals: [{key: 'DTW', val: 'Detroit (DTW)'}, {key: 'LAX', val: 'LA'}, {key: 'MIA', val: 'Miami'}, {key: 'NYC', val: 'NYC'}, {key: 'LAX', val: 'LAMP'}],
-    onInput: onInputObject,
+    onInput: function(filteredVals, query) {
+            TC2.addValues(arrayToAddObject);
+    },
     onSelect: function(val, key) { console.log(val, key); },
-    maxResults: 15,  // Defaults to 10
+    maxResults: 15,
 });
 ```
-Example onInput helpers that fetch new results and add them based on what the user inputs.
-```js
-var TC, TC2;
-function onInputArray(filteredVals, query) {
-    if (query.length > 2 && filteredVals.length < 5) {
-        fetch('https://yourUrlHere.com/?q=' + query)
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function(response) {
-                TC.addValues(response.results.map(function(record) { return record.value }));
-            });
-    }
-}
+### Options
 
-function onInputObject(filteredVals, query) {
-    if (query.length > 2 && Object.keys(filteredVals).length < 5) {
-        fetch('https://yourUrlHere.com/?q=' + query)
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function(response) {
-                TC2.addValues(response.results.map(function(record) { return {key: record.key, val: record.value} }));
-            });
-    }
-}
-```
-
-## Publicly exposed methods
-- `TinyComplete.addValues(array_of_objects_or_strings)` - This will allow you to add new values dynamically to a cache of options
-- `onInput(filteredVals, query)` - On input callback will be executed with the filtered list that the user sees and the query that the user entered
+- `id` - A string that matches the value of an id for the input element. In the above example: `city`
+- `defaultVals` - An array of strings or objects (key, val) that will be the default items in the drop down container
+- `onInput(filteredVals, query)` - On user input, this callback will be executed with the filtered list of options that the user sees and the query that the user entered
 - `onSelect(val, key)` - On Select of an option from dropdown list, the callback will be executed with value of the input box, and key (if passed in)
+- `maxResults` - The max number of options the user sees in the dropdown container.
+    - Default: 10 values
+
+### Publicly exposed methods
+- `TC.addValues(array_of_objects_or_strings)` - This will allow you to add new values dynamically to a cache of options for each instance
 
 ## Benchmarking Size (`npm package-size`):
 |Typeahead Packages  | minified  |  Gzipped |
 | ------------- | ------------- | ------------- |
-| tiny-complete  | 1.87 KB |839 B|   
+| tiny-complete  | 1.81 KB |812 B|   
 | autocomplete | 13.47 KB | 4.46KB|
 | react-autocomplete | 16.36 KB | 5.54KB|
 | typeahead | 14 KB | 4.7 KB|
@@ -99,7 +89,7 @@ The tests are in the `spec/unit` directory. Please follow naming convention with
 
 We use [Jasmine](https://jasmine.github.io/api/3.0/global) The existing tests are in the spec folder.
 
-Please write tests for new additions. We use codecov to test for complete unit test coverage.
+Please write tests for new additions. We use codecov to test for complete(100%) unit test coverage.
 
 #### Run all the tests:
 
