@@ -160,7 +160,7 @@ function TinyComplete(options) {
 
 (function () {
     /* istanbul ignore next  */
-    if (typeof exports === 'object') {
+    if (typeof module !== 'undefined' && module.exports) {
         module.exports = TinyComplete;
     } else if (typeof define === 'function' && define.amd) {
         window.define(TinyComplete);
