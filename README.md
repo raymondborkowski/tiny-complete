@@ -13,7 +13,6 @@
 Lightweight, dependency free type-ahead/autocomplete solution! Get this running in under 5 minutes!
 <br>
 <br>
-[View Demo](https://raymondborkowski.github.io/tiny-complete/index.html) <br><br>
 ![](./docs/example.png)
 
 ## Install
