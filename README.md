@@ -13,12 +13,23 @@
 Lightweight, dependency free type-ahead/autocomplete solution! Get this running in under 5 minutes!
 <br>
 <br>
-![](./docs/example.png)
+![](./docs/example.gif)
 
 ## Install
 `npm i tiny-complete --save`
-## The Code
-### Example
+
+## Usage
+Require the `tiny-complete` package
+```js
+var TC = require('tiny-complete');
+```
+
+or
+
+```html
+<script src="https://cdn.rawgit.com/raymondborkowski/tiny-complete/master/min.js"></script>
+```
+
 The html input items on your page that you wish for tiny-complete to be attached:
 ```html
 <div class="tiny-complete">
@@ -32,8 +43,8 @@ var arrayToAddString = ['JFK'];
  
 var TC = new TinyComplete({
     id: 'city',
-    defaultVals: ['LA', 'Miami', 'Detroit', 'NYC'],
-    onInput: function (filteredVals, query) { TC.addValues(arrayToAddString); },
+    listItems: ['LA', 'Miami', 'Detroit', 'NYC'],
+    onUserInput: function (filteredVals, query) { TC.addListItems(arrayToAddString); },
     onSelect: function(val) { console.log(val); },
     maxResults: 15,
 });
@@ -47,32 +58,38 @@ var arrayToAddObject = [{
  
 var TC2 = new TinyComplete({
     id: 'city2',
-    defaultVals: [{key: 'DTW', val: 'Detroit (DTW)'}, {key: 'LAX', val: 'LA'}],
-    onInput: function(filteredVals, query) { TC2.addValues(arrayToAddObject); },
+    listItems: [{key: 'DTW', val: 'Detroit (DTW)'}, {key: 'LAX', val: 'LA'}],
+    onUserInput: function(filteredVals, query) { TC2.addListItems(arrayToAddObject); },
     onSelect: function(val, key) { console.log(val, key); },
     maxResults: 15,
 });
 ```
-### Options
+## Options
 
 - `id` - A string that matches the value of an id for the input element. In the above example: `city`
-- `defaultVals` - An array of strings or objects (key, val) that will be the default items in the drop down container
+- `listItems` - An array of strings or objects (key, val) that will be the default items in the drop down container
 - `onInput(filteredVals, query)` - On user input, this callback will be executed with the filtered list of options that the user sees and the query that the user entered
 - `onSelect(val, key)` - On Select of an option from dropdown list, the callback will be executed with value of the input box, and key (if passed in)
 - `maxResults` - The max number of options the user sees in the dropdown container.
     - Default: 10 values
 
-### Publicly exposed methods
-- `TC.addValues(array_of_objects_or_strings)` - This will allow you to add new values dynamically to a cache of options for each instance
+## Exposed methods
+- `TC.addListItems(array_of_objects_or_strings)` - This will allow you to add new values dynamically to a cache of options for each instance
 
-## Benchmarking Size (`npm package-size`):
-|Typeahead Packages  | minified  |  Gzipped |
+## Package Size (`npm package-size`):
+|Autocomplete Packages  | minified  |  Gzipped |
 | ------------- | ------------- | ------------- |
 | tiny-complete  | 1.81 KB |812 B|   
 | autocomplete | 13.47 KB | 4.46KB|
 | react-autocomplete | 16.36 KB | 5.54KB|
 | typeahead | 14 KB | 4.7 KB|
 | suggestions | 5.19 KB| 1.69 KB|
+
+## Tested Brower Coverage
+- IE 9+
+- Chrome
+- Firefox
+- Safari 9+
 
 ## Developing and contributing to tiny-complete
 ### Folder structure

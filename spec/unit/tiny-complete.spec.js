@@ -51,8 +51,8 @@ describe('TinyComplete', function () {
         el.dispatchEvent(ev);
     }
 
-    function resetDOM() {
-        var dom = new JSDOM('<!DOCTYPE html><body><input id="dumby1" type="text" /><input id="jokes" type="text" name="jokes" placeholder="Enter your joke term" /><div></div></body>', { pretendToBeVisual: true });
+    function resetDOM(dom) {
+        dom = dom || new JSDOM('<!DOCTYPE html><body><input id="dumby1" type="text" /><input id="jokes" type="text" name="jokes" placeholder="Enter your joke term" /><div></div></body>');
         global.window = dom.window;
         global.document = dom.window.document;
         global.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
@@ -62,19 +62,18 @@ describe('TinyComplete', function () {
         resetDOM();
         TC = new TinyComplete({
             id: 'jokes',
-            defaultVals: ['Rockford', 'New York', 'Miami', 'rockford'],
-            onInput: function () {
-                TC.addValues(['Rockland', 'Raleigh']);
+            listItems: ['Rockford', 'New York', 'Miami', 'rockford'],
+            onUserInput: function () {
+                TC.addListItems(['Rockland', 'Raleigh']);
             }
         });
     });
 
     describe('InitialState - ', function () {
-        it('console errs msg if no options passed in', function () {
-            spyOn(console, 'error');
+        it('TC to be falsy if no options passed in', function () {
             TC = new TinyComplete();
 
-            expect(console.error).toHaveBeenCalledWith(jasmine.any(String)); // eslint-disable-line no-console
+            expect(TC.addListItems).toBeUndefined();
         });
 
         it('does nothing if navigating no list', function () {
@@ -130,7 +129,7 @@ describe('TinyComplete', function () {
             expect(innerTxt).toEqual(['Rockford', 'New York', 'rockford']);
         });
 
-        it('contains the correct values after onInput is called', function () {
+        it('contains the correct values after onUserInput is called', function () {
             addInput(65, 'a');
             document.getElementById('jokes').focus();
             jasmine.clock().tick(800);
@@ -148,9 +147,9 @@ describe('TinyComplete', function () {
         it('shows a max of ten values by defaults', function () {
             TC = new TinyComplete({
                 id: 'jokes',
-                defaultVals: ['Rockford', 'New York', 'Miami', 'rockford', 'Rockford1', 'New York1', 'Miami1', 'rockford1', 'Rockford2', 'New York2', 'Miami2', 'rockford2'],
-                onInput: function () {
-                    TC.addValues(['Rockland', 'Raleigh']);
+                listItems: ['Rockford', 'New York', 'Miami', 'rockford', 'Rockford1', 'New York1', 'Miami1', 'rockford1', 'Rockford2', 'New York2', 'Miami2', 'rockford2'],
+                onUserInput: function () {
+                    TC.addListItems(['Rockland', 'Raleigh']);
                 }
             });
             addInput(82, 'r');
@@ -164,9 +163,9 @@ describe('TinyComplete', function () {
         it('shows a max of what user sets for values length', function () {
             TC = new TinyComplete({
                 id: 'jokes',
-                defaultVals: ['Rockford', 'New York', 'Miami', 'rockford', 'Rockford1', 'New York1', 'Miami1', 'rockford1', 'Rockford2', 'New York2', 'Miami2', 'rockford2', 'Rockford3', 'New York3', 'Miami3', 'rockford3'],
-                onInput: function () {
-                    TC.addValues(['Rockland', 'Raleigh']);
+                listItems: ['Rockford', 'New York', 'Miami', 'rockford', 'Rockford1', 'New York1', 'Miami1', 'rockford1', 'Rockford2', 'New York2', 'Miami2', 'rockford2', 'Rockford3', 'New York3', 'Miami3', 'rockford3'],
+                onUserInput: function () {
+                    TC.addListItems(['Rockland', 'Raleigh']);
                 },
                 maxResults: 11
             });
@@ -179,13 +178,14 @@ describe('TinyComplete', function () {
         });
     });
 
-    describe('click of option - ', function () {
+    describe('click of option with no sibling - ', function () {
         beforeEach(function () {
+            resetDOM(new JSDOM('<!DOCTYPE html><body><input id="jokes" type="text" name="jokes" placeholder="Enter your joke term" /></body>'));
             TC = new TinyComplete({
                 id: 'jokes',
-                defaultVals: [{key: 'DTW', val: 'Detroit (DTW)'}, {key: 'LAX', val: 'LA'}, {key: 'MIA', val: 'Miami'}, {key: 'NYC', val: 'NYC'}, {key: 'LAX', val: 'LAMP'}],
-                onInput: function () {
-                    TC.addValues(['Rockland', 'Raleigh']);
+                listItems: [{key: 'DTW', val: 'Detroit (DTW)'}, {key: 'LAX', val: 'LA'}, {key: 'MIA', val: 'Miami'}, {key: 'NYC', val: 'NYC'}, {key: 'LAX', val: 'LAMP'}],
+                onUserInput: function () {
+                    TC.addListItems(['Rockland', 'Raleigh']);
                 },
                 maxResults: 15
             });
