@@ -5,14 +5,14 @@
 (function () {
     // List Manipulations
 
-    function filterResults(list, query) {
-        return list.filter(function (record) {
+    function filterResults(userInputedListItems, query) {
+        return userInputedListItems.filter(function (record) {
             return (record.val || record).toLowerCase().indexOf(query.toLowerCase()) !== -1 && record;
         });
     }
 
-    function dedupe(list) {
-        return list.filter(function (item, index, array) {
+    function dedupeLists(userInputedListItems) {
+        return userInputedListItems.filter(function (item, index, array) {
             return item.key ? array.map(function (mapItem) {
                 return mapItem.val;
             }).indexOf(item.val) === index : array.indexOf(item) === index;
@@ -21,10 +21,10 @@
 
     // Listeners
 
-    function listContainerListeners(inputEl, listContainer, onSelect) {
+    function listeners(inputEl, listContainer, onSelect) {
         listContainer.addEventListener('click', function (e) {
             setKVofInputEl(inputEl, e.target, onSelect || function () {});
-            listContainerDisplay(listContainer, 'none');
+            adjustListContainerDisplay(listContainer, 'none');
         });
 
         listContainer.addEventListener('mouseover', function (e) {
@@ -32,11 +32,11 @@
         });
 
         inputEl.addEventListener('blur', function () {
-            listContainerDisplay(listContainer, 'none');
+            adjustListContainerDisplay(listContainer, 'none');
         });
 
         inputEl.addEventListener('focus', function () {
-            listContainerDisplay(listContainer, 'block');
+            adjustListContainerDisplay(listContainer, 'block');
         });
     }
 
@@ -54,10 +54,10 @@
         cb(val, key);
     }
 
-    function listContainerDisplay(listContainerEl, displayStyle) {
+    function adjustListContainerDisplay(listContainerEl, displayStyle) {
         setTimeout(function () {
             listContainerEl.style.display = displayStyle;
-        }, 10);
+        }, 10); // Give time for blur event to execute
     }
 
     function addDropDownHTML(inputEl, vals, options) {
@@ -87,7 +87,7 @@
             }
         });
 
-        listContainerListeners(inputEl, listContainer, options.onSelect);
+        listeners(inputEl, listContainer, options.onSelect);
     }
 
     function addActiveClass(el) {
@@ -113,16 +113,16 @@
     }
 
     function navigateListListener(inputEl, id) {
-        var indexOfCurrentOption = -1;
+        var indexOfCurrentHighlightedItem = -1;
         inputEl.addEventListener('keydown', function (e) {
             var options = (document.querySelector('.tc-' + id) || {}).children;
             var keycode = e.keyCode;
-            if (keycode === 40) {
-                indexOfCurrentOption = highlightFocusedOption(options, indexOfCurrentOption += 1);
-            } else if (keycode === 38) {
-                indexOfCurrentOption = highlightFocusedOption(options, indexOfCurrentOption -= 1);
-            } else if (keycode === 13) {
-                indexOfCurrentOption >= 0 && options.length > 0 && options[indexOfCurrentOption].click();
+            if (keycode === 40) { // upKey
+                indexOfCurrentHighlightedItem = highlightFocusedOption(options, indexOfCurrentHighlightedItem += 1);
+            } else if (keycode === 38) { // Down Key
+                indexOfCurrentHighlightedItem = highlightFocusedOption(options, indexOfCurrentHighlightedItem -= 1);
+            } else if (keycode === 13) { // Enter Key
+                indexOfCurrentHighlightedItem >= 0 && options.length > 0 && options[indexOfCurrentHighlightedItem].click();
             }
         });
     }
@@ -131,24 +131,23 @@
 
     function TinyComplete(options) {
         if (typeof options !== 'object') return;
-        var masterList = dedupe(options.listItems);
+        var masterList = dedupeLists(options.listItems);
         var valuesToShow = masterList;
         var userSearchQuery = '';
 
-        bindings();
+        setInputBindings();
 
         this.addListItems = function (vals) {
-            masterList = dedupe(masterList.concat(vals));
+            masterList = dedupeLists(masterList.concat(vals));
         };
 
-        function bindings() {
+        function setInputBindings() {
             var inputEl = document.getElementById(options.id);
             inputEl.addEventListener('input', function (e) {
                 userSearchQuery = e.target.value;
                 valuesToShow = filterResults(masterList, userSearchQuery);
                 addDropDownHTML(inputEl, valuesToShow, options);
-                options.onUserInput ? options.onUserInput(valuesToShow, userSearchQuery) : /* istanbul ignore next */ function () {
-                };
+                options.onUserInput ? options.onUserInput(valuesToShow, userSearchQuery) : /* istanbul ignore next */ function () {};
             });
             navigateListListener(inputEl, options.id);
         }

@@ -68,7 +68,7 @@ var TC2 = new TinyComplete({
 
 - `id` - A string that matches the value of an id for the input element. In the above example: `city`
 - `listItems` - An array of strings or objects (key, val) that will be the default items in the drop down container
-- `onInput(filteredVals, query)` - On user input, this callback will be executed with the filtered list of options that the user sees and the query that the user entered
+- `onUserInput(filteredVals, query)` - On user input, this callback will be executed with the filtered list of options that the user sees and the query that the user entered
 - `onSelect(val, key)` - On Select of an option from dropdown list, the callback will be executed with value of the input box, and key (if passed in)
 - `maxResults` - The max number of options the user sees in the dropdown container.
     - Default: 10 values
