@@ -1,7 +1,9 @@
 node_modules/
-.idea/
 npm-debug.log
 coverage
 docs
+spec
 local_testing
-*.md
+LICENSE.md
+CONTRIBUTING.md
+.*
