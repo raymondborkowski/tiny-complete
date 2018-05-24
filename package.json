@@ -1,14 +1,15 @@
 {
   "name": "tiny-complete",
-  "version": "0.1.4",
+  "version": "1.0.0",
   "description": "Tiny complete is THE smallest auto complete package out there today",
   "main": "index.js",
   "scripts": {
     "lint": "./node_modules/.bin/eslint .",
     "lint_fix": "./node_modules/.bin/eslint . --fix",
-    "coverage": "./node_modules/.bin/istanbul cover node_modules/jasmine/bin/jasmine.js && codecov",
+    "minify": "./node_modules/.bin/uglifyjs --compress --mangle --output min.js -- index.js ",
+    "coverage": "./node_modules/.bin/istanbul cover ./node_modules/jasmine/bin/jasmine.js && codecov",
     "test": "npm run lint && npm run coverage",
-    "deploy": "npm publish"
+    "deploy": "minify && npm publish"
   },
   "repository": {
     "type": "git",
@@ -35,6 +36,7 @@
     "istanbul": "^0.4.5",
     "jasmine": "^3.1.0",
     "jsdom": "^11.8.0",
+    "uglify-js": "^3.3.27",
     "xmlhttprequest": "^1.8.0"
   }
 }
