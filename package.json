@@ -1,8 +1,9 @@
 {
   "name": "tiny-complete",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Tiny complete is THE smallest auto complete package out there today",
   "main": "index.js",
+  "browser": "min.js",
   "scripts": {
     "lint": "./node_modules/.bin/eslint .",
     "lint_fix": "./node_modules/.bin/eslint . --fix",
