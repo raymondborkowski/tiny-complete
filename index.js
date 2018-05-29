@@ -156,9 +156,9 @@
     /* istanbul ignore next  */
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = TinyComplete;
-    } else if (typeof window.define === 'function' && define.amd) {
-        window.define(TinyComplete);
-    } else {
+    } else if (typeof define === 'function' && define.amd) {
+        define(TinyComplete);
+    } else if (typeof window !== 'undefined') {
         window.TinyComplete = TinyComplete;
     }
 }());
