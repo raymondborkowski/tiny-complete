@@ -57,7 +57,7 @@
     function adjustListContainerDisplay(listContainerEl, displayStyle) {
         setTimeout(function () {
             listContainerEl.style.display = displayStyle;
-        }, 10); // Give time for blur event to execute
+        }, 100); // Give time for blur event to execute
     }
 
     function addDropDownHTML(inputEl, vals, options) {
