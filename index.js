@@ -51,7 +51,7 @@
         var key = elClicked.getAttribute('key');
         inputEl.value = val;
         inputEl.setAttribute('key', key);
-        cb(val, key);
+        setTimeout(function () { cb(val, key); }, 100);
     }
 
     function adjustListContainerDisplay(listContainerEl, displayStyle) {
