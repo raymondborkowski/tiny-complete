@@ -128,54 +128,6 @@ describe('TinyComplete', function () {
             expect(options.length).toEqual(3);
             expect(innerTxt).toEqual(['Rockford', 'New York', 'rockford']);
         });
-
-        xit('contains the correct values after onUserInput is called', function () {
-            addInput(65, 'a');
-            document.getElementById('jokes').focus();
-            jasmine.clock().tick(800);
-
-            var options = getDropDownEl().children;
-            var innerTxt = [];
-            for (var i = 0; i < options.length; i++) {
-                innerTxt.push(options[i].innerHTML);
-            }
-
-            expect(options.length).toEqual(3);
-            expect(innerTxt).toEqual(['Miami', 'Rockland', 'Raleigh']);
-        });
-
-        xit('shows a max of ten values by defaults', function () {
-            TC = new TinyComplete({
-                id: 'jokes',
-                listItems: ['Rockford', 'New York', 'Miami', 'rockford', 'Rockford1', 'New York1', 'Miami1', 'rockford1', 'Rockford2', 'New York2', 'Miami2', 'rockford2'],
-                onUserInput: function () {
-                    TC.addListItems(['Rockland', 'Raleigh']);
-                }
-            });
-            addInput(82, 'r');
-            document.getElementById('jokes').focus();
-            jasmine.clock().tick(800);
-            var options = getDropDownEl().children;
-
-            expect(options.length).toEqual(10);
-        });
-
-        xit('shows a max of what user sets for values length', function () {
-            TC = new TinyComplete({
-                id: 'jokes',
-                listItems: ['Rockford', 'New York', 'Miami', 'rockford', 'Rockford1', 'New York1', 'Miami1', 'rockford1', 'Rockford2', 'New York2', 'Miami2', 'rockford2', 'Rockford3', 'New York3', 'Miami3', 'rockford3'],
-                onUserInput: function () {
-                    TC.addListItems(['Rockland', 'Raleigh']);
-                },
-                maxResults: 11
-            });
-            addInput(82, 'r');
-            document.getElementById('jokes').focus();
-            jasmine.clock().tick(800);
-            var options = getDropDownEl().children;
-
-            expect(options.length).toEqual(11);
-        });
     });
 
     describe('click of option with no sibling - ', function () {
