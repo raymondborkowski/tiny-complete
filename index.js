@@ -33,6 +33,9 @@
 
         inputEl.addEventListener('blur', function () {
             adjustListContainerDisplay(listContainer, 'none');
+            var nextSib = inputEl.nextElementSibling;
+            var valueToFill = nextSib && (nextSib.querySelector('#tc-hover') || nextSib.firstElementChild);
+            setKVofInputEl(inputEl, valueToFill, onSelect || function () {});
         });
 
         inputEl.addEventListener('focus', function () {
@@ -47,11 +50,13 @@
     }
 
     function setKVofInputEl(inputEl, elClicked, cb) {
-        var val = elClicked.innerHTML;
-        var key = elClicked.getAttribute('key');
-        inputEl.value = val;
-        inputEl.setAttribute('key', key);
-        cb(val, key);
+        if (elClicked) {
+            var val = elClicked.innerHTML;
+            var key = elClicked.getAttribute('key');
+            inputEl.value = val;
+            inputEl.setAttribute('key', key);
+            cb(val, key);
+        }
     }
 
     function adjustListContainerDisplay(listContainerEl, displayStyle) {

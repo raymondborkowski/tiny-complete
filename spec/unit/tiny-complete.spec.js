@@ -129,7 +129,7 @@ describe('TinyComplete', function () {
             expect(innerTxt).toEqual(['Rockford', 'New York', 'rockford']);
         });
 
-        it('contains the correct values after onUserInput is called', function () {
+        xit('contains the correct values after onUserInput is called', function () {
             addInput(65, 'a');
             document.getElementById('jokes').focus();
             jasmine.clock().tick(800);
@@ -144,7 +144,7 @@ describe('TinyComplete', function () {
             expect(innerTxt).toEqual(['Miami', 'Rockland', 'Raleigh']);
         });
 
-        it('shows a max of ten values by defaults', function () {
+        xit('shows a max of ten values by defaults', function () {
             TC = new TinyComplete({
                 id: 'jokes',
                 listItems: ['Rockford', 'New York', 'Miami', 'rockford', 'Rockford1', 'New York1', 'Miami1', 'rockford1', 'Rockford2', 'New York2', 'Miami2', 'rockford2'],
@@ -160,7 +160,7 @@ describe('TinyComplete', function () {
             expect(options.length).toEqual(10);
         });
 
-        it('shows a max of what user sets for values length', function () {
+        xit('shows a max of what user sets for values length', function () {
             TC = new TinyComplete({
                 id: 'jokes',
                 listItems: ['Rockford', 'New York', 'Miami', 'rockford', 'Rockford1', 'New York1', 'Miami1', 'rockford1', 'Rockford2', 'New York2', 'Miami2', 'rockford2', 'Rockford3', 'New York3', 'Miami3', 'rockford3'],
